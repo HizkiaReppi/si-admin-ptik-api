@@ -1,0 +1,55 @@
+name: Continuous Deployment PTIK Information System to CPanel
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    name: Deploy PTIK Information System Backend to CPanel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, intl, bcmath, gd, pdo_mysql, curl
+          tools: composer
+
+      - name: Install PHP Dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Prepare Deployment Artifacts
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan storage:link
+
+      - name: FTP-Deploy-Action
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          exclude: |
+            .git/
+            .git/**
+            vendor/
+            vendor/**
+            node_modules/
+            node_modules/**
+            tests/
+            tests/**
+            storage/framework/cache/*.php
+            storage/framework/views/*.php
+            storage/logs/*.log
+            .env.testing
+            .env.example
+          debug: true
