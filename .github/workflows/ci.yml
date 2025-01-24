@@ -51,15 +51,13 @@ jobs:
         run: chmod -R 777 storage bootstrap/cache
 
       - name: Configure Testing Environment
-        run: |
-          cp .env.testing .env
-          php artisan config:cache
+        run: php artisan config:cache
 
       - name: Run Database Migrations
-        run: php artisan migrate --env=testing
+        run: php artisan migrate
 
       - name: Run Static Analysis
         run: ./vendor/bin/pint
 
       - name: Run Unit Tests
-        run: php artisan test --env=testing --no-interaction
+        run: php artisan test

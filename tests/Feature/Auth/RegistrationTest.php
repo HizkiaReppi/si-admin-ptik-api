@@ -1,13 +1,14 @@
 <?php
 
 test('new users can register', function () {
-    $response = $this->post('/register', [
+    $response = $this->post('/v1/auth/register', [
         'name' => 'Test User',
+        'username' => 'testuser',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password123@',
+        'password_confirmation' => 'Password123@',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertNoContent();
+    $response->assertStatus(201);
 });
