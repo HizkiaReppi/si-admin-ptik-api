@@ -1,66 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Informasi Admin PTIK
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Informasi Admin PTIK adalah aplikasi berbasis web yang dirancang untuk membantu pengelolaan administrasi di Jurusan Pendidikan Teknologi Informasi dan Komunikasi, Fakultas Teknik, Universitas Negeri Manado.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Manajemen Pengguna:**
+    -   Registrasi, login, dan logout dengan autentikasi berbasis token.
+    -   Role-based access control untuk membedakan hak akses pengguna.
+-   **Manajemen Data Pengguna:**
+    -   Pengelolaan data mahasiswa, staf administrasi, dosen, dan pimpinan jurusan.
+-   **Manajemen Pengajuan Berkas:**
+    -   Pengajuan berkas oleh mahasiswa.
+    -   Verifikasi dan validasi berkas oleh staf administrasi.
+    -   Pembuatan surat permohonan oleh staff administrasi.
+    -   Persetujuan berkas pimpinan jurusan.
+-   **Dashboard:**
+    -   Statistik penggunaan sistem.
+    -   Informasi terbaru terkait administrasi.
+-   **Notifikasi:**
+    -   Pengingat tugas dan pemberitahuan status berkas.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi yang Digunakan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Frontend
 
-## Learning Laravel
+-   **Framework:** React
+-   **Styling:** Tailwind CSS
+-   **Routing:** React Router
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Backend
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **Framework:** Laravel
+-   **Database:** MySQL
+-   **Autentikasi:** Laravel Sanctum
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalasi dan Penggunaan
 
-## Laravel Sponsors
+### Prasyarat
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Pastikan Anda memiliki:
 
-### Premium Partners
+-   **Node.js** (20 atau lebih baru) dan **npm**
+-   **PHP** (v8.2 atau lebih baru)
+-   **Composer**
+-   **MySQL**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Langkah Instalasi
 
-## Contributing
+#### 1. Clone Repository
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Clone frontend dan backend
+git clone https://github.com/HizkiaReppi/si-admin-ptik.git
+cd si-admin-ptik
 
-## Code of Conduct
+git clone https://github.com/HizkiaReppi/si-admin-ptik-api.git
+cd si-admin-ptik-api
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### 2. Setup Backend
 
-## Security Vulnerabilities
+```bash
+# Masuk ke folder backend
+cd si-admin-ptik-api
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Install dependencies
+composer install
 
-## License
+# Copy .env dan sesuaikan konfigurasi
+cp .env.example .env
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Generate application key
+php artisan key:generate
+
+# Migrasi database
+php artisan migrate
+
+# Jalankan server lokal
+php artisan serve
+```
+
+#### 3. Setup Frontend
+
+```bash
+# Masuk ke folder frontend
+cd si-admin-ptik
+
+# Install dependencies
+npm install
+
+# Jalankan server lokal
+npm run dev
+```
+
+## Kontribusi
+
+Kami menyambut kontribusi dari siapa pun. Harap ikuti langkah-langkah berikut untuk berkontribusi:
+
+1. Fork repository.
+2. Buat branch baru untuk fitur atau perbaikan Anda.
+3. Kirim pull request.
+
+## Tim Pengembang
+
+-   **Nama Pengembang**: Hizkia Reppi
+-   **Kontak**: hizkiareppi@gmail.com
+
+## Catatan Tambahan
+
+-   **Dikelola oleh**: Tim Sistem Informasi PTIK
