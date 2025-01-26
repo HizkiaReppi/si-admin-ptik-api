@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Lecturer;
+namespace App\Models\Lecturers;
 
 use App\Models\Lecturer;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
