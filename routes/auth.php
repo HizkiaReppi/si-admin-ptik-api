@@ -27,16 +27,17 @@ Route::prefix('auth')->group(function () {
         ->name('password.store');
 
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['auth', 'signed', 'throttle:6,1'])
+        ->middleware(['auth', 'signed', 'throttle:6,1', 'auth:sanctum'])
         ->name('verification.verify');
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware(['auth', 'throttle:6,1'])
+        ->middleware(['auth', 'throttle:6,1', 'auth:sanctum'])
         ->name('verification.send');
 
-    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
+    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])
+        ->middleware(['auth', 'auth:sanctum']);
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->middleware('auth')
+        ->middleware(['auth', 'auth:sanctum'])
         ->name('logout');
 });
