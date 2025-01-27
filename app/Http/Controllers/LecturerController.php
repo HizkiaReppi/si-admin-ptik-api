@@ -49,9 +49,21 @@ class LecturerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLecturerRequest $request)
+    public function store(StoreLecturerRequest $request): JsonResponse
     {
-        //
+        try {
+            $validatedData = $request->validated();
+
+            if ($request->hasFile('photo')) {
+                $validatedData['photo'] = $request->file('photo');
+            }
+
+            $lecturer = $this->lecturerService->createLecturer($validatedData);
+
+            return ApiResponseClass::sendResponse(201, 'Lecturer created successfully', $lecturer->toArray());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'Failed to create lecturer:' . $e->getMessage());
+        }
     }
 
     /**

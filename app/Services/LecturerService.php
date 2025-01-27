@@ -2,16 +2,20 @@
 
 namespace App\Services;
 
+use App\Helpers\FormatterHelper;
 use App\Repositories\LecturerRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class LecturerService
 {
     private LecturerRepository $lecturerRepository;
+    private FormatterHelper $formatterHelper;
 
-    public function __construct(LecturerRepository $lecturerRepository)
+    public function __construct(LecturerRepository $lecturerRepository, FormatterHelper $formatterHelper)
     {
         $this->lecturerRepository = $lecturerRepository;
+        $this->formatterHelper = $formatterHelper;
     }
 
     /**
@@ -37,5 +41,35 @@ class LecturerService
         }
 
         return $this->lecturerRepository->getAll($relations, $filters, $perPage);
+    }
+
+    /**
+     * Create a new lecturer with optional related data.
+     *
+     * @param array $data
+     * @return \App\Models\Lecturer
+     */
+    public function createLecturer(array $data)
+    {
+        try {
+            return DB::transaction(function () use ($data) {
+                if (isset($data['photo'])) {
+                    $file = $data['photo'];
+                    $filePath = time() . '_dosen_' . $data['nidn'] . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('public/images/lecturers', $filePath);
+                    $data['photo'] = $filePath;
+                }
+
+                $result = $this->lecturerRepository->store($this->formatterHelper->camelToSnake($data));
+
+                if (!$result) {
+                    throw new \Exception('Gagal menyimpan foto dan data dosen');
+                }
+
+                return $result;
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }

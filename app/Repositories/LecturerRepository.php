@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\LecturerRepositoryInterface;
 use App\Models\Lecturer;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class LecturerRepository implements LecturerRepositoryInterface
 {
@@ -24,16 +26,7 @@ class LecturerRepository implements LecturerRepositoryInterface
             $query->with($relations);
         }
 
-        $query->join('users', 'lecturers.user_id', '=', 'users.id')
-            ->select([
-                'lecturers.id as id',
-                'lecturers.nip',
-                'lecturers.nidn',
-                'lecturers.front_degree',
-                'lecturers.back_degree',
-                'users.name',
-                'users.email'
-            ]);
+        $query->join('users', 'lecturers.user_id', '=', 'users.id')->select(['lecturers.id as id', 'lecturers.nip', 'lecturers.nidn', 'lecturers.front_degree', 'lecturers.back_degree', 'users.name', 'users.email']);
 
         if (!empty($filters['search'])) {
             $searchTerm = $filters['search'];
@@ -68,7 +61,34 @@ class LecturerRepository implements LecturerRepositoryInterface
 
     public function store(array $data): Lecturer
     {
-        return Lecturer::create($data);
+        try {
+            return DB::transaction(function () use ($data) {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'username' => $data['nidn'],
+                    'email' => $data['email'],
+                    'password' => bcrypt($data['nidn']),
+                    'role' => 'lecturer',
+                ]);
+
+                $lecturerData = Lecturer::create([
+                    'nip' => $data['nip'],
+                    'nidn' => $data['nidn'],
+                    'front_degree' => $data['front_degree'] ?? null,
+                    'back_degree' => $data['back_degree'] ?? null,
+                    'position' => $data['position'] ?? null,
+                    'rank' => $data['rank'] ?? null,
+                    'type' => $data['type'] ?? null,
+                    'phone_number' => $data['phone_number'] ?? null,
+                    'address' => $data['address'] ?? null,
+                    'user_id' => $user->id,
+                ]);
+
+                return $lecturerData;
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 
     public function update(array $data, string $id)
