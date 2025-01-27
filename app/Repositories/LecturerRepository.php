@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ResourceNotFoundException;
 use App\Interfaces\LecturerRepositoryInterface;
 use App\Models\Lecturer;
 use App\Models\User;
@@ -98,6 +99,27 @@ class LecturerRepository implements LecturerRepositoryInterface
 
     public function delete(string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $lecturer = Lecturer::find($id);
+
+            if (!$lecturer) {
+                throw new ResourceNotFoundException("Lecturer data not found");
+            }
+
+            $photo = $lecturer->photo;
+
+            $lecturer->user->delete();
+            $lecturer->delete();
+
+            DB::commit();
+
+            return [
+                "lecturer" => $lecturer,
+                "photo" => $photo
+            ];
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }

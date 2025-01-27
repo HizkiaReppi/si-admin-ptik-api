@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\FormatterHelper;
 use App\Repositories\LecturerRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LecturerService
 {
@@ -68,6 +70,32 @@ class LecturerService
 
                 return $result;
             });
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function deleteLecturer(string $id)
+    {
+        try {
+            return DB::transaction(function () use ($id) {
+                $result = $this->lecturerRepository->delete($id);
+
+                if (!$result) {
+                    throw new \Exception('Gagal menghapus data dosen');
+                }
+
+                if ($result['photo'] !== null) {
+                    $oldImagePath = 'public/images/lecturers/' . $result['photo'];
+                    if (Storage::exists($oldImagePath)) {
+                        Storage::delete($oldImagePath);
+                    }
+                }
+
+                return $result;
+            });
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

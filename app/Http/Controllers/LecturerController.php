@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\ApiResponseClass;
+use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
 use App\Models\Lecturer;
 use App\Http\Requests\StoreLecturerRequest;
@@ -87,6 +88,13 @@ class LecturerController extends Controller
      */
     public function destroy(Lecturer $lecturer)
     {
-        //
+        try {
+            $this->lecturerService->deleteLecturer($lecturer->id);
+            return ApiResponseClass::sendResponse(200, 'Lecturer deleted successfully');
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
     }
 }
