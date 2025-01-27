@@ -70,9 +70,25 @@ class LecturerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Lecturer $lecturer)
+    public function show(Lecturer $lecturer): JsonResponse
     {
-        //
+        try {
+            $lecturer = $this->lecturerService->getLecturerById($lecturer->id, [
+                'user',
+                'educations',
+                'experiences',
+                'researchFields',
+                'researchProjects',
+                'communityServices',
+                'publications'
+            ]);
+
+            return ApiResponseClass::sendResponse(200, 'Lecturer retrieved successfully', $lecturer->toArray());
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.');
+        }
     }
 
     /**

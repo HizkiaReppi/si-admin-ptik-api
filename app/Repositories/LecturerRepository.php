@@ -57,7 +57,19 @@ class LecturerRepository implements LecturerRepositoryInterface
 
     public function getById(string $id, array $relations = []): Lecturer
     {
-        return Lecturer::with($relations)->findOrFail($id);
+        $query = Lecturer::query();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        $lecturer = $query->find($id);
+
+        if (!$lecturer) {
+            throw new ResourceNotFoundException("Lecturer data not found");
+        }
+
+        return $lecturer;
     }
 
     public function store(array $data): Lecturer

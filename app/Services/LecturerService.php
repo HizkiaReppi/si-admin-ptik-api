@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\FormatterHelper;
+use App\Models\Lecturer;
 use App\Repositories\LecturerRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -46,6 +47,24 @@ class LecturerService
     }
 
     /**
+     * Get lecturer by ID with optional relations.
+     *
+     * @param string $id
+     * @param array $relations
+     * @return \App\Models\Lecturer
+     */
+    public function getLecturerById(string $id, array $relations = []): Lecturer
+    {
+        try {
+            return $this->lecturerRepository->getById($id, $relations);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
      * Create a new lecturer with optional related data.
      *
      * @param array $data
@@ -75,6 +94,11 @@ class LecturerService
         }
     }
 
+    /**
+     * Delete a lecturer by ID.
+     *
+     * @param string $id
+     */
     public function deleteLecturer(string $id)
     {
         try {
