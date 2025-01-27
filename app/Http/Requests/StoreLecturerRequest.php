@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Classes\ApiResponseClass;
+use App\Models\Lecturer;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -26,9 +28,9 @@ class StoreLecturerRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
-            'email' => ['required', 'email', 'max:255'],
-            'nip' => ['required', 'string', 'min:18', 'max:18'],
-            'nidn' => ['required', 'string', 'min:10', 'max:10'],
+            'email' => ['required', 'string', 'email', 'max:255', 'min:4', 'unique:' . User::class],
+            'nip' => ['required', 'string', 'min:18', 'max:18', 'unique:' . Lecturer::class, 'regex:/^[0-9]*$/'],
+            'nidn' => ['required', 'string', 'min:10', 'max:10', 'unique:' . Lecturer::class, 'regex:/^[0-9]*$/'],
             'frontDegree' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s.,]*$/'],
             'backDegree' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s.,]*$/'],
             'position' => ['nullable', 'string', 'max:100'],
@@ -54,12 +56,19 @@ class StoreLecturerRequest extends FormRequest
             'name.max' => 'Nama maksimal 255 karakter.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Email tidak valid.',
+            'email.min' => 'Email minimal 4 karakter.',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah terdaftar.',
             'nip.required' => 'NIP wajib diisi.',
             'nip.min' => 'NIP harus berisi 18 karakter.',
             'nip.max' => 'NIP harus berisi 18 karakter.',
+            'nip.unique' => 'NIP sudah terdaftar.',
+            'nip.regex' => 'NIP harus berupa angka.',
             'nidn.required' => 'NIDN wajib diisi.',
             'nidn.min' => 'NIDN harus berisi 10 karakter.',
             'nidn.max' => 'NIDN harus berisi 10 karakter.',
+            'nidn.unique' => 'NIDN sudah terdaftar.',
+            'nidn.regex' => 'NIDN harus berupa angka.',
             'frontDegree.regex' => 'Gelar depan harus berupa huruf.',
             'backDegree.regex' => 'Gelar belakang harus berupa huruf.',
             'phoneNumber.regex' => 'Nomor telepon harus berupa angka.',
