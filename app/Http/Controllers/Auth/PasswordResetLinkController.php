@@ -30,10 +30,12 @@ class PasswordResetLinkController extends Controller
 
         if ($status != Password::RESET_LINK_SENT) {
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'email' => "Kami tidak dapat menemukan pengguna dengan alamat email tersebut."
             ]);
         }
 
-        return response()->json(['status' => __($status)]);
+        return response()->json([
+            'status' => "Kami telah mengirimkan tautan pengaturan ulang kata sandi Anda melalui email."
+        ]);
     }
 }

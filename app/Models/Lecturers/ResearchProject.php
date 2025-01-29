@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Models\Lecturers;
+
+use App\Models\Lecturer;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ResearchProject extends Model
+{
+    use HasFactory, HasUuids;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'lecturer_id',
+        'title',
+        'description',
+        'year',
+        'funding_source',
+        'budget',
+    ];
+
+    /**
+     * Get the lecturer that owns the research project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function lecturer(): BelongsTo
+    {
+        return $this->belongsTo(Lecturer::class);
+    }
+}

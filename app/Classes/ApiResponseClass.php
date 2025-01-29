@@ -62,7 +62,7 @@ class ApiResponseClass
      * @param array|object $data
      * @return JsonResponse
      */
-    public static function sendError(int $code = 400, string $error, array|object $data): JsonResponse
+    public static function sendError(int $code = 400, string $error, array|object $data = []): JsonResponse
     {
         $response = [
             'success' => false,

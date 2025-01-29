@@ -44,10 +44,12 @@ class NewPasswordController extends Controller
 
         if ($status != Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'email' => 'Token kata sandi tidak valid.',
             ]);
         }
 
-        return response()->json(['status' => __($status)]);
+        return response()->json([
+            'status' => 'Kata sandi Anda telah diatur ulang. Silakan masuk ke sistem menggunakan kata sandi baru anda.',
+        ]);
     }
 }
