@@ -104,9 +104,58 @@ class LecturerRepository implements LecturerRepositoryInterface
         }
     }
 
-    public function update(array $data, string $id)
+    public function update(array $data, string $id): Lecturer
     {
-        //
+        try {
+            return DB::transaction(function () use ($data, $id) {
+                $lecturer = Lecturer::find($id);
+
+                if (!$lecturer) {
+                    throw new ResourceNotFoundException("Lecturer data not found");
+                }
+
+                $lecturer->update([
+                    'front_degree' => $data['front_degree'] ?? null,
+                    'back_degree' => $data['back_degree'] ?? null,
+                    'position' => $data['position'] ?? null,
+                    'rank' => $data['rank'] ?? null,
+                    'type' => $data['type'] ?? null,
+                    'phone_number' => $data['phone_number'] ?? null,
+                    'address' => $data['address'] ?? null,
+                ]);
+
+                $lecturer->user->update([
+                    'name' => $data['name'],
+                    'photo' => $data['photo'] ?? null,
+                ]);
+
+                if (isset($data['nidn'])) {
+                    $lecturer->update([
+                        'nidn' => $data['nidn'],
+                    ]);
+                    $lecturer->user->update([
+                        'username' => $data['nidn'],
+                        'password' => bcrypt($data['nidn']),
+                    ]);
+                }
+
+                if (isset($data['nip'])) {
+                    $lecturer->update([
+                        'nip' => $data['nip'],
+                    ]);
+                }
+
+                if (isset($data['email'])) {
+                    $lecturer->user->update([
+                        'email' => $data['email'],
+                    ]);
+                }
+
+                return $lecturer;
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 
     public function delete(string $id)

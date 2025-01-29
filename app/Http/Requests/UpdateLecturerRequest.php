@@ -29,7 +29,7 @@ class UpdateLecturerRequest extends FormRequest
         $isNIDNExist = Lecturer::where('nidn', $this->nidn)->exists();
         $isEmailExist = User::where('email', $this->email)->exists();
         $isNIPExist = Lecturer::where('nip', $this->nip)->exists();
-        
+
         $rules = [
             'name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
             'frontDegree' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s.,]*$/'],
