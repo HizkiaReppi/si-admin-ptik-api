@@ -71,36 +71,6 @@ class Lecturer extends Model
     }
 
     /**
-     * Get the research projects for the lecturer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function researchProjects(): HasMany
-    {
-        return $this->hasMany(ResearchProject::class);
-    }
-
-    /**
-     * Get the community services for the lecturer.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function communityServices(): HasMany
-    {
-        return $this->hasMany(CommunityService::class);
-    }
-
-    /**
-     * Get the publications for the lecturer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function publications(): HasMany
-    {
-        return $this->hasMany(Publication::class);
-    }
-
-    /**
      * Get the full name of the lecturer.
      *
      * @return string

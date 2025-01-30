@@ -66,43 +66,6 @@ return new class extends Migration
             // Unique constraint to prevent duplicate associations
             $table->unique(['lecturer_id', 'research_field_id']);
         });
-
-        Schema::create('research_projects', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
-            $table->string('title'); // Judul penelitian
-            $table->text('description')->nullable(); // Deskripsi penelitian
-            $table->year('year')->nullable(); // Tahun penelitian
-            $table->string('funding_source')->nullable(); // Sumber dana
-            $table->decimal('budget', 15, 2)->nullable(); // Anggaran dana
-            $table->timestamps();
-        });
-
-        Schema::create('community_services', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
-            $table->string('title'); // Judul pengabdian masyarakat
-            $table->text('description')->nullable(); // Deskripsi kegiatan
-            $table->year('year')->nullable(); // Tahun pengabdian
-            $table->string('funding_source')->nullable(); // Sumber dana
-            $table->decimal('budget', 15, 2)->nullable(); // Anggaran dana
-            $table->timestamps();
-        });
-
-        Schema::create('publications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
-            $table->string('title'); // Judul publikasi
-            $table->text('description')->nullable(); // Deskripsi publikasi
-            $table->enum('publication_type', ['article', 'book', 'proceeding', 'other'])->nullable();  // Jenis publikasi (misalnya: Jurnal, Prosiding, Buku, dll.)
-            $table->string('publisher')->nullable(); // Penerbit publikasi
-            $table->date('publication_date')->nullable(); // Tanggal publikasi
-            $table->string('doi')->nullable(); // Digital Object Identifier (DOI)
-            $table->string('issn')->nullable(); // ISSN untuk jurnal
-            $table->string('isbn')->nullable(); // ISBN untuk buku
-            $table->string('author')->nullable(); // Penulis (dapat digunakan untuk nama dosen atau kolaborator)
-            $table->timestamps();
-        });
     }
 
     /**
@@ -114,8 +77,6 @@ return new class extends Migration
         Schema::dropIfExists('educations');
         Schema::dropIfExists('experiences');
         Schema::dropIfExists('research_fields');
-        Schema::dropIfExists('research_projects');
-        Schema::dropIfExists('community_services');
-        Schema::dropIfExists('publications');
+        Schema::dropIfExists('lecturer_research_fields');
     }
 };
