@@ -95,6 +95,48 @@ class LecturerService
     }
 
     /**
+     * Update a lecturer by ID with optional related data.
+     *
+     * @param string $id
+     * @param array $data
+     * @return \App\Models\Lecturer
+     */
+    public function updateLecturer(array $data, string $id)
+    {
+        try {
+            return DB::transaction(function () use ($data, $id) {
+                $lecturer = $this->lecturerRepository->getById($id);
+
+                if (isset($data['photo'])) {
+                    $file = $data['photo'];
+                    $filePath = time() . '_dosen_' . $lecturer->nidn . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('public/images/lecturers', $filePath);
+                    $data['photo'] = $filePath;
+
+                    if ($lecturer->photo !== null) {
+                        $oldImagePath = 'public/images/lecturers/' . $lecturer->photo;
+                        if (Storage::exists($oldImagePath)) {
+                            Storage::delete($oldImagePath);
+                        }
+                    }
+                }
+
+                $result = $this->lecturerRepository->update($this->formatterHelper->camelToSnake($data), $id);
+
+                if (!$result) {
+                    throw new \Exception('Gagal menyimpan foto dan data dosen');
+                }
+
+                return $result;
+            });
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
      * Delete a lecturer by ID.
      *
      * @param string $id

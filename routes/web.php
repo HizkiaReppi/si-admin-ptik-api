@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LecturerController;
+use App\Http\Controllers\LecturerEducationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,9 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::apiResource('/lecturers', LecturerController::class)->names('api.lecturers');
+        Route::get('lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->name('api.lecturers.educations.show');
+        Route::put('lecturers/{lecturer_id}/educations/update', [LecturerEducationController::class, 'update'])->name('api.lecturers.educations.update');
+        Route::delete('lecturers/{lecturer_id}/educations/{education_id}', [LecturerEducationController::class, 'destroy'])->name('api.lecturers.educations.destroy');
     });
 
     require __DIR__.'/auth.php';

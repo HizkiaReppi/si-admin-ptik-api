@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Lecturers\CommunityService;
 use App\Models\Lecturers\Education;
 use App\Models\Lecturers\Experience;
-use App\Models\Lecturers\Publication;
 use App\Models\Lecturers\ResearchField;
-use App\Models\Lecturers\ResearchProject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,36 +65,6 @@ class Lecturer extends Model
     public function researchFields(): BelongsToMany
     {
         return $this->belongsToMany(ResearchField::class, 'lecturer_research_fields', 'lecturer_id', 'research_field_id');
-    }
-
-    /**
-     * Get the research projects for the lecturer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function researchProjects(): HasMany
-    {
-        return $this->hasMany(ResearchProject::class);
-    }
-
-    /**
-     * Get the community services for the lecturer.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function communityServices(): HasMany
-    {
-        return $this->hasMany(CommunityService::class);
-    }
-
-    /**
-     * Get the publications for the lecturer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function publications(): HasMany
-    {
-        return $this->hasMany(Publication::class);
     }
 
     /**

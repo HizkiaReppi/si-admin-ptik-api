@@ -78,9 +78,6 @@ class LecturerController extends Controller
                 'educations',
                 'experiences',
                 'researchFields',
-                'researchProjects',
-                'communityServices',
-                'publications'
             ]);
 
             return ApiResponseClass::sendResponse(200, 'Lecturer retrieved successfully', $lecturer->toArray());
@@ -94,15 +91,29 @@ class LecturerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLecturerRequest $request, Lecturer $lecturer)
+    public function update(UpdateLecturerRequest $request, string $lecturer_id): JsonResponse
     {
-        //
+        try {
+            $validatedData = $request->validated();
+
+            if ($request->hasFile('photo')) {
+                $validatedData['photo'] = $request->file('photo');
+            }
+
+            $lecturer = $this->lecturerService->updateLecturer($validatedData, $lecturer_id);
+
+            return ApiResponseClass::sendResponse(200, 'Lecturer updated successfully', $lecturer->toArray());
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Lecturer $lecturer)
+    public function destroy(Lecturer $lecturer): JsonResponse
     {
         try {
             $this->lecturerService->deleteLecturer($lecturer->id);
