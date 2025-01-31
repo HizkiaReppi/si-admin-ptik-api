@@ -78,9 +78,6 @@ class LecturerController extends Controller
                 'educations',
                 'experiences',
                 'researchFields',
-                'researchProjects',
-                'communityServices',
-                'publications'
             ]);
 
             return ApiResponseClass::sendResponse(200, 'Lecturer retrieved successfully', $lecturer->toArray());
