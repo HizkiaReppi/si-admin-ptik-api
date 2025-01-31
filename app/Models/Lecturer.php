@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Lecturers\CommunityService;
 use App\Models\Lecturers\Education;
 use App\Models\Lecturers\Experience;
-use App\Models\Lecturers\Publication;
 use App\Models\Lecturers\ResearchField;
-use App\Models\Lecturers\ResearchProject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
