@@ -57,4 +57,20 @@ class LecturerEducationController extends Controller
             return ApiResponseClass::sendError(500, $e->getMessage());
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $lecturerId, string $educationId): JsonResponse
+    {
+        try {
+            $this->lecturerEducationService->delete($lecturerId, $educationId);
+
+            return ApiResponseClass::sendResponse(200, 'Lecturer education deleted successfully');
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError(404, $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, $e->getMessage());
+        }
+    }
 }

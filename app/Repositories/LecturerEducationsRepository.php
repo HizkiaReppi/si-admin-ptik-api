@@ -59,4 +59,23 @@ class LecturerEducationsRepository
             return $lecturer;
         });
     }
+
+    public function delete(string $lecturerId, string $educationId)
+    {
+        $lecturer = Lecturer::find($lecturerId);
+
+        if (!$lecturer) {
+            throw new ResourceNotFoundException("Lecturer data not found");
+        }
+
+        $education = $lecturer->educations()->find($educationId);
+
+        if (!$education) {
+            throw new ResourceNotFoundException("Education data not found");
+        }
+
+        $education->delete();
+
+        return true;
+    }
 }
