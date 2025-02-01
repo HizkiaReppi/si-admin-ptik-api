@@ -39,7 +39,7 @@ class ResearchFieldController extends Controller
         $pagination = $this->apiResponseHelper->generatePagination($researchFields);
         $researchFields = $researchFields->items();
 
-        return ApiResponseClass::sendResponseWithPagination(200, 'Lecturers retrieved successfully', $researchFields, $pagination);
+        return ApiResponseClass::sendResponseWithPagination(200, 'Research fields retrieved successfully', $researchFields, $pagination);
     }
 
     /**
