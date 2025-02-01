@@ -3,6 +3,7 @@
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\LecturerEducationController;
 use App\Http\Controllers\LecturerExperienceController;
+use App\Http\Controllers\ResearchFieldController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('v1')->group(function () {
+    Route::apiResource('research-fields', ResearchFieldController::class)->names('api.research-fields');
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
