@@ -3,6 +3,7 @@
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\LecturerEducationController;
 use App\Http\Controllers\LecturerExperienceController;
+use App\Http\Controllers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchFieldController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/lecturers/{lecturer_id}/experiences/details', [LecturerExperienceController::class, 'show'])->name('api.lecturers.experiences.show');
         Route::put('/lecturers/{lecturer_id}/experiences/update', [LecturerExperienceController::class, 'update'])->name('api.lecturers.experiences.update');
         Route::delete('/lecturers/{lecturer_id}/experiences/{experience_id}', [LecturerExperienceController::class, 'destroy'])->name('api.lecturers.experiences.destroy');
+
+        // Lecturer Research Fields
+        Route::get('/lecturers/{lecturer_id}/research-fields/details', [LecturerResearchFieldController::class, 'show'])->name('api.lecturers.research-fields.show');
+        Route::put('/lecturers/{lecturer_id}/research-fields/update', [LecturerResearchFieldController::class, 'update'])->name('api.lecturers.research-fields.update');
+        Route::delete('/lecturers/{lecturer_id}/research-fields/{experience_id}', [LecturerResearchFieldController::class, 'destroy'])->name('api.lecturers.research-fields.destroy');
     });
 
     require __DIR__.'/auth.php';
