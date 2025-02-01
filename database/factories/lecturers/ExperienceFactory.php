@@ -6,7 +6,7 @@ use App\Models\Lecturer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturers\Experience>
  */
 class ExperienceFactory extends Factory
 {
@@ -26,6 +26,6 @@ class ExperienceFactory extends Factory
             'start_date' => fake()->date(),
             'end_date' => fake()->date(),
             'is_current' => fake()->boolean()
-        ]; 
+        ];
    }
 }

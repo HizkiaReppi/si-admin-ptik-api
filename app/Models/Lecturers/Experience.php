@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Experience extends Model
 {
+    /** @use HasFactory<\Database\Factories\Lecturers\ExperienceFactory> */
     use HasFactory, HasUuids;
 
     /**

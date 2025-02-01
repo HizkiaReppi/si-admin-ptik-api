@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ResearchField extends Model
 {
+    /** @use HasFactory<\Database\Factories\Lecturers\ResearchFieldFactory> */
     use HasFactory, HasUuids;
 
     /**

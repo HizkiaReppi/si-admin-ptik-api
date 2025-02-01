@@ -2,11 +2,10 @@
 
 namespace Database\Factories\Lecturers;
 
-use App\Models\Lecturer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturers\ResearchField>
  */
 class ResearchFieldFactory extends Factory
 {
@@ -21,6 +20,6 @@ class ResearchFieldFactory extends Factory
             'id' => fake()->uuid(),
             'field_name' => fake()->word(),
             'description' => fake()->paragraph()
-        ]; 
+        ];
    }
 }
