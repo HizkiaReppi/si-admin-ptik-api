@@ -27,7 +27,7 @@ it('can associate a research field with a lecturer', function () {
         'description' => 'Description of Research Field A'
     ]);
 
-    $researchField->lecturer()->attach($lecturer);
+    $researchField->lecturers()->attach($lecturer);
 
     $this->assertDatabaseHas('lecturer_research_fields', [
         'lecturer_id' => $lecturer->id,
@@ -39,9 +39,9 @@ it('can retrieve associated lecturers for a research field', function () {
     $lecturer = Lecturer::factory()->create();
     $researchField = ResearchField::factory()->create();
 
-    $researchField->lecturer()->attach($lecturer);
+    $researchField->lecturers()->attach($lecturer);
 
-    $lecturers = $researchField->lecturer;
+    $lecturers = $researchField->lecturers;
     expect($lecturers->first()->id)->toBe($lecturer->id);
 });
 
@@ -58,7 +58,7 @@ it('ensures associated records are deleted when a research field is deleted', fu
     $lecturer = Lecturer::factory()->create();
     $researchField = ResearchField::factory()->create();
 
-    $researchField->lecturer()->attach($lecturer);
+    $researchField->lecturers()->attach($lecturer);
 
     $researchField->delete();
 

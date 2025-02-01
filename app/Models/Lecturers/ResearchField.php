@@ -25,7 +25,7 @@ class ResearchField extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function lecturer(): BelongsToMany
+    public function lecturers(): BelongsToMany
     {
         return $this->belongsToMany(Lecturer::class, 'lecturer_research_fields', 'research_field_id', 'lecturer_id');
     }
