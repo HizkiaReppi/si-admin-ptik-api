@@ -52,7 +52,7 @@ return new class extends Migration
 
         Schema::create('research_fields', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('field_name', 200); // Nama bidang penelitian
+            $table->string('field_name', 200)->unique(); // Nama bidang penelitian
             $table->text('description')->nullable(); // Deskripsi bidang penelitian
             $table->timestamps();
         });
