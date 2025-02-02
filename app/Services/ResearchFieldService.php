@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\ResourceNotFoundException;
+use App\Models\Lecturers\ResearchField;
 use App\Repositories\ResearchFieldRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -28,5 +30,45 @@ class ResearchFieldService
         }
 
         return $this->researchFieldRepository->getAll($filters, $perPage);
+    }
+
+    public function getById(string $id): ResearchField
+    {
+        try {
+            return $this->researchFieldRepository->getById($id);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        }
+    }
+
+    public function create(array $data): ResearchField
+    {
+        try {
+            return $this->researchFieldRepository->store($data);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function update(array $data, string $id): ResearchField
+    {
+        try {
+            return $this->researchFieldRepository->update($data, $id);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function delete(string $id): bool
+    {
+        try {
+            return $this->researchFieldRepository->delete($id);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }
