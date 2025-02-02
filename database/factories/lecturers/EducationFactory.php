@@ -6,7 +6,7 @@ use App\Models\Lecturer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lecturers\Education>
  */
 class EducationFactory extends Factory
 {
@@ -25,6 +25,6 @@ class EducationFactory extends Factory
             'institution' => fake()->sentence(2),
             'graduation_year' => fake()->numberBetween(1900, date('Y')),
             'thesis_title' => fake()->sentence(5),
-        ]; 
+        ];
    }
 }

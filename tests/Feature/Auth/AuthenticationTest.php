@@ -31,8 +31,18 @@ test('users can not authenticate with invalid password', function () {
 test('users can logout', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/v1/auth/logout');
+    $this->actingAs($user, 'web');
 
-    $this->assertGuest();
-    $response->assertStatus(200);
+    $response = $this->postJson('/v1/auth/logout', [], [
+        'Accept' => 'application/json',
+    ]);
+
+    $this->assertGuest('web');
+
+    $response->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'code' => 200,
+            'message' => 'User logged out successfully.',
+        ]);
 });

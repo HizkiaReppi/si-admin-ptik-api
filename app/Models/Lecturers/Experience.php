@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Experience extends Model
 {
+    /** @use HasFactory<\Database\Factories\Lecturers\ExperienceFactory> */
     use HasFactory, HasUuids;
 
     /**
@@ -19,8 +20,20 @@ class Experience extends Model
      */
     protected $fillable = [
         'lecturer_id', 'position', 'organization', 'description',
-        'start_date', 'end_date',
+        'start_date', 'end_date', 'is_current',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_current' => 'boolean',
+        ];
+    }
 
     /**
      * Get the lecturer that owns the experience.
