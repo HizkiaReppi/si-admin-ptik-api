@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lecturers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid('id')->primary()->index();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete(); // Relasi ke users
             $table->string('nip', 18)->unique()->index();
             $table->string('nidn', 10)->unique()->index();
@@ -28,7 +28,7 @@ return new class extends Migration
         });
 
         Schema::create('educations', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid('id')->primary()->index();
             $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
             $table->enum('degree', ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'])->index(); // Jenjang pendidikan
             $table->string('field_of_study', 150)->index(); // Bidang studi
@@ -39,7 +39,7 @@ return new class extends Migration
         });
 
         Schema::create('experiences', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid('id')->primary()->index();
             $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
             $table->string('position', 100)->index(); // Posisi/Jabatan
             $table->string('organization')->index(); // Organisasi/Perusahaan
@@ -51,14 +51,14 @@ return new class extends Migration
         });
 
         Schema::create('research_fields', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid('id')->primary()->index();
             $table->string('field_name', 200)->unique(); // Nama bidang penelitian
             $table->text('description')->nullable(); // Deskripsi bidang penelitian
             $table->timestamps();
         });
 
         Schema::create('lecturer_research_fields', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('(UUID())'));
+            $table->uuid('id')->primary()->default(DB::raw('(UUID())'))->index();
             $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
             $table->foreignUuid('research_field_id')->constrained('research_fields')->cascadeOnDelete();
             $table->timestamps();
