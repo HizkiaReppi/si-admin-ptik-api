@@ -3,6 +3,7 @@
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\LecturerEducationController;
 use App\Http\Controllers\LecturerExperienceController;
+use App\Http\Controllers\LecturerProfileController;
 use App\Http\Controllers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchFieldController;
 use Illuminate\Http\Request;
@@ -39,6 +40,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/lecturers/{lecturer_id}/research-fields/details', [LecturerResearchFieldController::class, 'show'])->name('api.lecturers.research-fields.show');
         Route::put('/lecturers/{lecturer_id}/research-fields/update', [LecturerResearchFieldController::class, 'update'])->name('api.lecturers.research-fields.update');
         Route::delete('/lecturers/{lecturer_id}/research-fields/{experience_id}', [LecturerResearchFieldController::class, 'destroy'])->name('api.lecturers.research-fields.destroy');
+
+        // Lecturer External Profile
+        Route::get('/lecturers/{lecturer_id}/external-profiles/details', [LecturerProfileController::class, 'show'])->name('api.lecturers.external-profiles.show');
+        Route::put('/lecturers/{lecturer_id}/external-profiles/update', [LecturerProfileController::class, 'update'])->name('api.lecturers.external-profiles.update');
+        Route::delete('/lecturers/{lecturer_id}/external-profiles/{profile_id}', [LecturerProfileController::class, 'destroy'])->name('api.lecturers.external-profiles.destroy');
     });
 
     require __DIR__.'/auth.php';
