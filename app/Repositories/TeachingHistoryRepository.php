@@ -20,17 +20,15 @@ class TeachingHistoryRepository
     /**
      * Fetch teaching history dari API eksternal.
      *
-     * @param string $dosenId
+     * @param string $lecturerId
      * @return array
      * @throws \Exception
      */
-
-
-    public function fetchTeachingHistory(string $dosenId): array
+    public function fetchTeachingHistory(string $lecturerId): array
     {
-        $cacheKey = "teaching_history_{$dosenId}";
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($dosenId) {
-            $url = "https://api-pddikti.ridwaanhall.me/dosen/teaching-history/{$dosenId}/";
+        $cacheKey = "teaching_history_{$lecturerId}";
+        return Cache::remember($cacheKey, now()->addMinutes(40320), function () use ($lecturerId) {
+            $url = "https://api-pddikti.ridwaanhall.me/dosen/teaching-history/{$lecturerId}/";
             try {
                 $response = $this->client->request('GET', $url, [
                     'headers' => [

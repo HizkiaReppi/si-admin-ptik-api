@@ -16,11 +16,11 @@ class TeachingHistoryService
     /**
      * Mengambil data teaching history berdasarkan dosenId.
      *
-     * @param string $dosenId
+     * @param string $lecturerId
      * @return array
      */
-    public function getTeachingHistory(string $dosenId): array
+    public function getTeachingHistory(string $lecturerId): array
     {
-        return $this->teachingHistoryRepoitory->fetchTeachingHistory($dosenId);
+        return $this->teachingHistoryRepoitory->fetchTeachingHistory($lecturerId);
     }
 }

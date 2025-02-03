@@ -18,13 +18,13 @@ class TeachingHistoryController extends Controller
     /**
      * Endpoint untuk mendapatkan teaching history dari API eksternal.
      *
-     * @param string $dosenId
+     * @param string $lecturerId
      * @return JsonResponse
      */
-    public function getTeachingHistory(string $dosenId): JsonResponse
+    public function getTeachingHistory(string $lecturerId): JsonResponse
     {
         try {
-            $data = $this->teachingHistoryService->getTeachingHistory($dosenId);
+            $data = $this->teachingHistoryService->getTeachingHistory($lecturerId);
 
             $message = !empty($data)
                 ? 'Teaching history fetched successfully.'

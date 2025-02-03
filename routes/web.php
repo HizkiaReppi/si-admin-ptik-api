@@ -56,7 +56,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/lecturers/{lecturer_id}/external-profiles/{profile_id}', [LecturerProfileController::class, 'destroy'])->name('api.lecturers.external-profiles.destroy');
 
         // External API
-        Route::get('/external/teaching-history/{dosenId}', [TeachingHistoryController::class, 'getTeachingHistory'])->middleware(CacheResponse::class)->name('api.external.teaching-history');
+        Route::get('/external/teaching-history/{lecturerId}', [TeachingHistoryController::class, 'getTeachingHistory'])->middleware(CacheResponse::class)->name('api.external.teaching-history');
     });
 
     require __DIR__.'/auth.php';
