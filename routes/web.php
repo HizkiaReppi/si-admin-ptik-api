@@ -6,6 +6,7 @@ use App\Http\Controllers\LecturerExperienceController;
 use App\Http\Controllers\LecturerProfileController;
 use App\Http\Controllers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchFieldController;
+use App\Http\Controllers\TeachingHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/lecturers/{lecturer_id}/external-profiles/details', [LecturerProfileController::class, 'show'])->name('api.lecturers.external-profiles.show');
         Route::put('/lecturers/{lecturer_id}/external-profiles/update', [LecturerProfileController::class, 'update'])->name('api.lecturers.external-profiles.update');
         Route::delete('/lecturers/{lecturer_id}/external-profiles/{profile_id}', [LecturerProfileController::class, 'destroy'])->name('api.lecturers.external-profiles.destroy');
+
+        // External API
+        Route::get('/external/teaching-history/{dosenId}', [TeachingHistoryController::class, 'getTeachingHistory']);
     });
 
     require __DIR__.'/auth.php';
