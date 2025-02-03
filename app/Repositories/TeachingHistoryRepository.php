@@ -43,9 +43,10 @@ class TeachingHistoryRepository
                     $data = json_decode($body, true);
                     return $data ?: [];
                 }
-                throw new \Exception("Unexpected status code: " . $response->getStatusCode());
+
+                return [];
             } catch (GuzzleException $e) {
-                throw new \Exception("Failed to fetch teaching history: " . $e->getMessage());
+                return [];
             }
         });
     }

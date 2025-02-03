@@ -25,7 +25,12 @@ class TeachingHistoryController extends Controller
     {
         try {
             $data = $this->teachingHistoryService->getTeachingHistory($dosenId);
-            return ApiResponseClass::sendResponse(200, 'Teaching history fetched successfully', $data);
+
+            $message = !empty($data)
+                ? 'Teaching history fetched successfully.'
+                : 'Teaching history is not available at this time.';
+
+            return ApiResponseClass::sendResponse(200, $message, $data);
         } catch (\Exception $e) {
             return ApiResponseClass::sendError(500, $e->getMessage());
         }
