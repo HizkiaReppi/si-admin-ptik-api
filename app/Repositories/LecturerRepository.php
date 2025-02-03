@@ -7,6 +7,7 @@ use App\Interfaces\LecturerRepositoryInterface;
 use App\Models\Lecturer;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class LecturerRepository implements LecturerRepositoryInterface
@@ -21,55 +22,61 @@ class LecturerRepository implements LecturerRepositoryInterface
      */
     public function getAll(array $relations = [], array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $query = Lecturer::query();
+        $cacheKey = "lecturers_all_" . md5(json_encode($filters));
 
-        if (!empty($relations)) {
-            $query->with($relations);
-        }
+        return Cache::remember($cacheKey, 3600, function () use ($relations, $filters, $perPage) {
+            $query = Lecturer::query();
 
-        $query->join('users', 'lecturers.user_id', '=', 'users.id')->select(['lecturers.id as id', 'lecturers.nip', 'lecturers.nidn', 'lecturers.front_degree', 'lecturers.back_degree', 'users.name', 'users.email']);
-
-        if (!empty($filters['search'])) {
-            $searchTerm = $filters['search'];
-
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('lecturers.nidn', 'like', "%{$searchTerm}%")
-                    ->orWhere('lecturers.nip', 'like', "%{$searchTerm}%")
-                    ->orWhere('users.name', 'like', "%{$searchTerm}%");
-            });
-        }
-
-        if (!empty($filters['sortBy']) && !empty($filters['order'])) {
-            $sortBy = $filters['sortBy'];
-            $sortOrder = $filters['order'];
-
-            if ($sortBy === 'name') {
-                $query->orderBy('users.name', $sortOrder);
-            } else {
-                $query->orderBy($sortBy, $sortOrder);
+            if (!empty($relations)) {
+                $query->with($relations);
             }
-        } else {
-            $query->orderBy('users.name', 'asc');
-        }
 
-        return $query->paginate($perPage);
+            $query->join('users', 'lecturers.user_id', '=', 'users.id')->select(['lecturers.id as id', 'lecturers.nip', 'lecturers.nidn', 'lecturers.front_degree', 'lecturers.back_degree', 'users.name', 'users.email']);
+
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
+
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('lecturers.nidn', 'like', "%{$searchTerm}%")
+                        ->orWhere('lecturers.nip', 'like', "%{$searchTerm}%")
+                        ->orWhere('users.name', 'like', "%{$searchTerm}%");
+                });
+            }
+
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                if ($sortBy === 'name') {
+                    $query->orderBy('users.name', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            } else {
+                $query->orderBy('users.name', 'asc');
+            }
+
+            return $query->paginate($perPage);
+        });
     }
 
     public function getById(string $id, array $relations = []): Lecturer
     {
-        $query = Lecturer::query();
+        return Cache::remember("lecturer_{$id}", 3600, function () use ($id, $relations) {
+            $query = Lecturer::query();
 
-        if (!empty($relations)) {
-            $query->with($relations);
-        }
+            if (!empty($relations)) {
+                $query->with($relations);
+            }
 
-        $lecturer = $query->find($id);
+            $lecturer = $query->find($id);
 
-        if (!$lecturer) {
-            throw new ResourceNotFoundException("Lecturer data not found");
-        }
+            if (!$lecturer) {
+                throw new ResourceNotFoundException("Lecturer data not found");
+            }
 
-        return $lecturer;
+            return $lecturer;
+        });
     }
 
     public function store(array $data): Lecturer

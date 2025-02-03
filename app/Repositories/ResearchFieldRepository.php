@@ -6,6 +6,7 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Interfaces\ResearchFieldRepositoryInterface;
 use App\Models\Lecturers\ResearchField;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ResearchFieldRepository implements ResearchFieldRepositoryInterface
@@ -20,44 +21,49 @@ class ResearchFieldRepository implements ResearchFieldRepositoryInterface
      */
     public function getAll(array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $query = ResearchField::query();
+        $cacheKey = "researchFields_all_" . md5(json_encode($filters));
+        return Cache::remember($cacheKey, 604800, function () use ($filters, $perPage) {
+            $query = ResearchField::query();
 
-        $query->with(['lecturers']);
+            $query->with(['lecturers']);
 
-        if (!empty($filters['search'])) {
-            $searchTerm = $filters['search'];
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
 
-            $query->where('field_name', 'like', "%{$searchTerm}%");
-        }
-
-        if (!empty($filters['sortBy']) && !empty($filters['order'])) {
-            $sortBy = $filters['sortBy'];
-            $sortOrder = $filters['order'];
-
-            if ($sortBy === 'field_name') {
-                $query->orderBy('field_name', $sortOrder);
-            } else {
-                $query->orderBy($sortBy, $sortOrder);
+                $query->where('field_name', 'like', "%{$searchTerm}%");
             }
-        }
 
-        return $query->paginate($perPage);
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                if ($sortBy === 'field_name') {
+                    $query->orderBy('field_name', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            }
+
+            return $query->paginate($perPage);
+        });
     }
 
 
     public function getById(string $id): ResearchField
     {
-        $query = ResearchField::query();
+        return Cache::remember("researchField_{$id}", 3600, function () use ($id) {
+            $query = ResearchField::query();
 
-        $query->with(['lecturers']);
+            $query->with(['lecturers']);
 
-        $researchField = $query->find($id);
+            $researchField = $query->find($id);
 
-        if (!$researchField) {
-            throw new ResourceNotFoundException("Research Field data not found");
-        }
+            if (!$researchField) {
+                throw new ResourceNotFoundException("Research Field data not found");
+            }
 
-        return $researchField;
+            return $researchField;
+        });
     }
 
     public function store(array $data): ResearchField
