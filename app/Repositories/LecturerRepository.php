@@ -22,7 +22,7 @@ class LecturerRepository implements LecturerRepositoryInterface
      */
     public function getAll(array $relations = [], array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $cacheKey = "lecturers_all_" . md5(json_encode($filters));
+        $cacheKey = "lecturers_all_{$perPage}_page_" . request()->get('page', 1) . "_" . md5(json_encode($filters));
 
         return Cache::remember($cacheKey, 3600, function () use ($relations, $filters, $perPage) {
             $query = Lecturer::query();

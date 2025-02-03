@@ -21,7 +21,7 @@ class ResearchFieldRepository implements ResearchFieldRepositoryInterface
      */
     public function getAll(array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $cacheKey = "researchFields_all_" . md5(json_encode($filters));
+        $cacheKey = "researchFields_all_{$perPage}_page_" . request()->get('page', 1) . "_" . md5(json_encode($filters));
         return Cache::remember($cacheKey, 604800, function () use ($filters, $perPage) {
             $query = ResearchField::query();
 
