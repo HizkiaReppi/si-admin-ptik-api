@@ -66,6 +66,14 @@ return new class extends Migration
             // Unique constraint to prevent duplicate associations
             $table->unique(['lecturer_id', 'research_field_id']);
         });
+
+        Schema::create('lecturer_profiles', function (Blueprint $table) {
+            $table->uuid('id')->index()->primary();
+            $table->foreignUuid('lecturer_id')->constrained('lecturers')->cascadeOnDelete();
+            $table->enum('platform', ['pddikti', 'google_scholar', 'sinta', 'scopus', 'researchgate', 'orcid', 'linkedin', 'other']);
+            $table->string('profile_url'); // Link ke profil dosen
+            $table->timestamps();
+        });
     }
 
     /**
@@ -78,5 +86,6 @@ return new class extends Migration
         Schema::dropIfExists('experiences');
         Schema::dropIfExists('research_fields');
         Schema::dropIfExists('lecturer_research_fields');
+        Schema::dropIfExists('lecturer_profiles');
     }
 };
