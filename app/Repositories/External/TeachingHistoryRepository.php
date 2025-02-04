@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\External;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;

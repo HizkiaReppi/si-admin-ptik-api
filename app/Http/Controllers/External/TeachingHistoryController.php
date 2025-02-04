@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\External;
 
 use App\Classes\ApiResponseClass;
-use App\Services\TeachingHistoryService;
+use App\Http\Controllers\Controller;
+use App\Services\External\TeachingHistoryService;
 use Illuminate\Http\JsonResponse;
 
 class TeachingHistoryController extends Controller

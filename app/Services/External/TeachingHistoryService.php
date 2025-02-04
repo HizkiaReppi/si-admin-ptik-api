@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\External;
 
-use App\Repositories\TeachingHistoryRepository;
+use App\Repositories\External\TeachingHistoryRepository;
 
 class TeachingHistoryService
 {
