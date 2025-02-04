@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ResearchField;
 
 use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
-use App\Http\Requests\StoreResearchFieldRequest;
-use App\Http\Requests\UpdateResearchFieldRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ResearchField\StoreResearchFieldRequest;
+use App\Http\Requests\ResearchField\UpdateResearchFieldRequest;
 use App\Models\Lecturers\ResearchField;
-use App\Services\ResearchFieldService;
+use App\Services\ResearchField\ResearchFieldService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

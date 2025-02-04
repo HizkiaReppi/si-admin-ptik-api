@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\ResearchField;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Interfaces\ResearchFieldRepositoryInterface;

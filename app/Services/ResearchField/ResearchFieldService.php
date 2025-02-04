@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\ResearchField;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Lecturers\ResearchField;
-use App\Repositories\ResearchFieldRepository;
+use App\Repositories\ResearchField\ResearchFieldRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ResearchFieldService

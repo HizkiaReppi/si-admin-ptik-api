@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\ResearchField;
 
 use App\Classes\ApiResponseClass;
 use App\Models\Lecturers\ResearchField;
@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateResearchFieldRequest extends FormRequest
+class StoreResearchFieldRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,17 +25,10 @@ class UpdateResearchFieldRequest extends FormRequest
      */
     public function rules(): array
     {
-        $isResearchFieldExist = ResearchField::where('field_name', $this->field_name)->exists();
-
-        $rules = [
+        return [
+            'field_name' => ['required', 'string', 'min:2', 'max:200', 'unique:' . ResearchField::class,],
             'description' => ['nullable', 'string'],
         ];
-
-        if($this->field_name && !$isResearchFieldExist) {
-            $rules['field_name'] = ['required', 'string', 'min:2', 'max:200', 'unique:' . ResearchField::class,];
-        }
-
-        return $rules;
     }
 
     /**
