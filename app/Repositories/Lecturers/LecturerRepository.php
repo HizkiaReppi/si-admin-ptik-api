@@ -24,6 +24,10 @@ class LecturerRepository implements LecturerRepositoryInterface
     {
         $cacheKey = "lecturers_all_{$perPage}_page_" . request()->get('page', 1) . "_" . md5(json_encode($filters));
 
+        $cacheKeys = Cache::get('lecturers_cache_keys', []);
+        $cacheKeys[] = $cacheKey;
+        Cache::put('lecturers_cache_keys', array_unique($cacheKeys), 3600);
+
         return Cache::remember($cacheKey, 3600, function () use ($relations, $filters, $perPage) {
             $query = Lecturer::query();
 

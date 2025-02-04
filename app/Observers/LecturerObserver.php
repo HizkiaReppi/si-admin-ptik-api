@@ -53,7 +53,13 @@ class LecturerObserver
      */
     private function clearCache(Lecturer $lecturer): void
     {
-        Cache::forget("lecturers_all_*");
+        $cacheKeys = Cache::get('lecturers_cache_keys', []);
+
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
+
+        Cache::forget('lecturers_cache_keys');
         Cache::forget("lecturer_{$lecturer->id}");
 
         ResponseCache::clear();
