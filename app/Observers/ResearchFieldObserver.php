@@ -53,7 +53,13 @@ class ResearchFieldObserver
      */
     private function clearCache(ResearchField $researchField): void
     {
-        Cache::forget("researchFields_all_*");
+        $cacheKeys = Cache::get('researchFields_cache_keys', []);
+
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
+
+        Cache::forget('researchFields_cache_keys');
         Cache::forget("researchField_{$researchField->id}");
 
         ResponseCache::clear();
