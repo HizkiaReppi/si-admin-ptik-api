@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('nim', 15)->unique()->index();;
             $table->string('entry_year', 4)->index();
             $table->enum('class', ['reguler', 'rpl'])->default('reguler');
-            $table->enum('gender', ['Male', 'Female']);
             $table->enum('concentration', ['RPL', 'Multimedia', 'TKJ']);
             $table->string('phone_number', 20)->nullable();
             $table->timestamps();

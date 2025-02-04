@@ -26,7 +26,6 @@ class StudentFactory extends Factory
             'nim' => fake()->unique()->numerify('##########'),
             'entry_year' => fake()->year(),
             'class' => fake()->randomElement(['reguler', 'rpl']),
-            'gender' => fake()->randomElement(['Male', 'Female']),
             'concentration' => fake()->randomElement(['RPL', 'Multimedia', 'TKJ']),
             'phone_number' => fake()->numerify('08##########'),
         ];

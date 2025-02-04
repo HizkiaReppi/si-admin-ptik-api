@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateLecturerRequest extends FormRequest
 {
@@ -36,10 +37,11 @@ class UpdateLecturerRequest extends FormRequest
             'backDegree' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s.,]*$/'],
             'position' => ['nullable', 'string', 'max:100'],
             'rank' => ['nullable', 'string', 'max:100'],
-            'type' => ['nullable', 'string', 'in:PNS,Honorer,Kontrak'],
+            'type' => ['nullable', 'string', Rule::in(['PNS', 'Honorer', 'Kontrak'])],
             'phoneNumber' => ['nullable', 'string', 'max:20', 'regex:/^[0-9]*$/'],
             'address' => ['nullable', 'string'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'gender' => ['required', Rule::in(['Male', 'Female'])],
         ];
 
         if($this->nidn && !$isNIDNExist) {
@@ -97,6 +99,8 @@ class UpdateLecturerRequest extends FormRequest
             'type.in' => 'Tipe harus valid.',
             'phoneNumber.max' => 'Nomor telepon maksimal 20 karakter.',
             'address.string' => 'Alamat harus berupa teks.',
+            'gender.required' => 'Jenis Kelamin wajib diisi.',
+            'gender.in' => 'Jenis Kelamin harus valid (Laki-Laki atau Perempuan).',
         ];
     }
 
@@ -120,6 +124,7 @@ class UpdateLecturerRequest extends FormRequest
             'phoneNumber' => 'Nomor Telepon',
             'address' => 'Alamat',
             'photo' => 'Foto',
+            'gender' => 'Jenis Kelamin',
         ];
 
         return parent::attributes();

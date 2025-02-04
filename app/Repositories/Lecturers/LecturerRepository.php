@@ -89,6 +89,8 @@ class LecturerRepository implements LecturerRepositoryInterface
                     'email' => $data['email'],
                     'password' => bcrypt($data['nidn']),
                     'role' => 'lecturer',
+                    'gender' => $data['gender'],
+                    'photo' => $data['photo'] ?? null,
                 ]);
 
                 $lecturerData = Lecturer::create([
@@ -134,6 +136,7 @@ class LecturerRepository implements LecturerRepositoryInterface
                 $lecturer->user->update([
                     'name' => $data['name'],
                     'photo' => $data['photo'] ?? null,
+                    'gender' => $data['gender'],
                 ]);
 
                 if (isset($data['nidn'])) {

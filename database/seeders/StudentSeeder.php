@@ -30,6 +30,7 @@ class StudentSeeder extends Seeder
                 'email' => $nim . '@unima.ac.id',
                 'password' => bcrypt($nim),
                 'role' => 'student',
+                'gender' => $gender == 1 ? 'Male' : 'Female',
             ]);
 
             $supervisor_1 = Lecturer::inRandomOrder()->first();
@@ -41,7 +42,6 @@ class StudentSeeder extends Seeder
                 'lecturer_id_2' => $supervisor_2->id ?? null,
                 'nim' => $nim,
                 'entry_year' => $year,
-                'gender' => $gender == 1 ? 'Male' : 'Female',
             ]);
         }
     }

@@ -29,6 +29,7 @@ class LecturerSeeder extends Seeder
                 'email' => strtolower(str_replace(' ', '', $name)) . '@unima.ac.id',
                 'password' => bcrypt($nidn),
                 'role' => 'lecturer',
+                'gender' => $gender == 1 ? 'Male' : 'Female',
             ]);
 
             Lecturer::create([
