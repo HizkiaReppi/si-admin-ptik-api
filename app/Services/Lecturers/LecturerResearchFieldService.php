@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Lecturers;
 
 use App\Exceptions\ResourceNotFoundException;
-use App\Repositories\LecturerResearchFieldRepository;
+use App\Repositories\Lecturers\LecturerResearchFieldRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class LecturerResearchFieldService

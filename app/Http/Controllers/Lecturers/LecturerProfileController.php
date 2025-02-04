@@ -6,7 +6,7 @@ use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lecturers\UpdateLecturerProfilesRequest;
-use App\Services\LecturerProfileService;
+use App\Services\Lecturers\LecturerProfileService;
 use Illuminate\Http\JsonResponse;
 
 class LecturerProfileController extends Controller

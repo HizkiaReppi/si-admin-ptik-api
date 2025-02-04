@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Lecturers\StoreLecturerRequest;
 use App\Http\Requests\Lecturers\UpdateLecturerRequest;
 use App\Models\Lecturer;
-use App\Services\LecturerService;
+use App\Services\Lecturers\LecturerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

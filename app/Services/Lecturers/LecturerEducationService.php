@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Lecturers;
 
 use App\Exceptions\ResourceNotFoundException;
-use App\Helpers\FormatterHelper;
-use App\Repositories\LecturerProfileRepository;
+use App\Repositories\Lecturers\LecturerEducationsRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class LecturerProfileService
+class LecturerEducationService
 {
-    private LecturerProfileRepository $lecturerProfileRepository;
-    private FormatterHelper $formatterHelper;
+    private LecturerEducationsRepository $lecturerEducationsRepository;
 
-    public function __construct(LecturerProfileRepository $lecturerProfileRepository, FormatterHelper $formatterHelper)
+    public function __construct(LecturerEducationsRepository $lecturerEducationsRepository)
     {
-        $this->lecturerProfileRepository = $lecturerProfileRepository;
-        $this->formatterHelper = $formatterHelper;
+        $this->lecturerEducationsRepository = $lecturerEducationsRepository;
     }
 
     /**
@@ -26,13 +23,13 @@ class LecturerProfileService
      */
     public function getByLecturerId(string $lecturerId): Collection
     {
-        return $this->lecturerProfileRepository->getByLecturerId($lecturerId);
+        return $this->lecturerEducationsRepository->getByLecturerId($lecturerId);
     }
 
     public function update(array $data, string $lecturerId)
     {
         try {
-            return $this->lecturerProfileRepository->update($this->formatterHelper->camelToSnake($data), $lecturerId);
+            return $this->lecturerEducationsRepository->update($data, $lecturerId);
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage());
         } catch (\Exception $e) {
@@ -43,7 +40,7 @@ class LecturerProfileService
     public function delete(string $lecturerId, string $educationId)
     {
         try {
-            return $this->lecturerProfileRepository->delete($lecturerId, $educationId);
+            return $this->lecturerEducationsRepository->delete($lecturerId, $educationId);
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage());
         } catch (\Exception $e) {

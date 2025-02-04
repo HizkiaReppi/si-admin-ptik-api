@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Lecturers;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Lecturers\Education;

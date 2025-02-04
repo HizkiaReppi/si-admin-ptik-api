@@ -6,7 +6,7 @@ use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lecturers\UpdateLecturerEducationsRequest;
-use App\Services\LecturerEducationService;
+use App\Services\Lecturers\LecturerEducationService;
 use Illuminate\Http\JsonResponse;
 
 class LecturerEducationController extends Controller

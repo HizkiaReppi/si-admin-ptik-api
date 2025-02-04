@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Lecturers;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\FormatterHelper;
 use App\Models\Lecturer;
-use App\Repositories\LecturerRepository;
+use App\Repositories\Lecturers\LecturerRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

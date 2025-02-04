@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Lecturers;
 
 use App\Exceptions\ResourceNotFoundException;
-use App\Repositories\LecturerEducationsRepository;
+use App\Repositories\Lecturers\LecturerExperiencesRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class LecturerEducationService
+class LecturerExperienceService
 {
-    private LecturerEducationsRepository $lecturerEducationsRepository;
+    private LecturerExperiencesRepository $lecturerExperiencesRepository;
 
-    public function __construct(LecturerEducationsRepository $lecturerEducationsRepository)
+    public function __construct(LecturerExperiencesRepository $lecturerExperiencesRepository)
     {
-        $this->lecturerEducationsRepository = $lecturerEducationsRepository;
+        $this->lecturerExperiencesRepository = $lecturerExperiencesRepository;
     }
 
     /**
@@ -23,13 +23,13 @@ class LecturerEducationService
      */
     public function getByLecturerId(string $lecturerId): Collection
     {
-        return $this->lecturerEducationsRepository->getByLecturerId($lecturerId);
+        return $this->lecturerExperiencesRepository->getByLecturerId($lecturerId);
     }
 
     public function update(array $data, string $lecturerId)
     {
         try {
-            return $this->lecturerEducationsRepository->update($data, $lecturerId);
+            return $this->lecturerExperiencesRepository->update($data, $lecturerId);
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage());
         } catch (\Exception $e) {
@@ -37,10 +37,10 @@ class LecturerEducationService
         }
     }
 
-    public function delete(string $lecturerId, string $educationId)
+    public function delete(string $lecturerId, string $experienceId)
     {
         try {
-            return $this->lecturerEducationsRepository->delete($lecturerId, $educationId);
+            return $this->lecturerExperiencesRepository->delete($lecturerId, $experienceId);
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage());
         } catch (\Exception $e) {
