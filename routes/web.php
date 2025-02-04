@@ -7,6 +7,7 @@ use App\Http\Controllers\Lecturers\LecturerExperienceController;
 use App\Http\Controllers\Lecturers\LecturerProfileController;
 use App\Http\Controllers\Lecturers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchField\ResearchFieldController;
+use App\Http\Controllers\Students\StudentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\ResponseCache\Middlewares\CacheResponse;
@@ -17,18 +18,23 @@ Route::get('/', function () {
         'code' => 200,
         'message' => 'Hello, Welcome to SI Admin PTIK'
     ], 200);
-});
+})->name('api.home');
 
 Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
-        })->middleware(CacheResponse::class);
+        })->middleware(CacheResponse::class)->name('api.user');
 
         // Lecturers
         Route::apiResource('/lecturers', LecturerController::class)->names('api.lecturers')->except(['index', 'show']);
         Route::get('/lecturers', [LecturerController::class, 'index'])->middleware(CacheResponse::class)->name('api.lecturers.index');
         Route::get('/lecturers/{lecturer}', [LecturerController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.show');
+
+        // Students
+        Route::apiResource('/students', StudentController::class)->names('api.students')->except(['index', 'show']);
+        Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
+        Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
 
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
