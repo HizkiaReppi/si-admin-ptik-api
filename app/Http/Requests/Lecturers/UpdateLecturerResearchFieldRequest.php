@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Lecturers;
 
 use App\Classes\ApiResponseClass;
 use App\Models\Lecturers\ResearchField;

@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\LecturerController;
-use App\Http\Controllers\LecturerEducationController;
-use App\Http\Controllers\LecturerExperienceController;
-use App\Http\Controllers\LecturerProfileController;
-use App\Http\Controllers\LecturerResearchFieldController;
+use App\Http\Controllers\Lecturers\LecturerController;
+use App\Http\Controllers\Lecturers\LecturerEducationController;
+use App\Http\Controllers\Lecturers\LecturerExperienceController;
+use App\Http\Controllers\Lecturers\LecturerProfileController;
+use App\Http\Controllers\Lecturers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchFieldController;
 use App\Http\Controllers\TeachingHistoryController;
 use Illuminate\Http\Request;

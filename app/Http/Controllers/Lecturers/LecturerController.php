@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Lecturers;
 
 use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Lecturers\StoreLecturerRequest;
+use App\Http\Requests\Lecturers\UpdateLecturerRequest;
 use App\Models\Lecturer;
-use App\Http\Requests\StoreLecturerRequest;
-use App\Http\Requests\UpdateLecturerRequest;
 use App\Services\LecturerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
