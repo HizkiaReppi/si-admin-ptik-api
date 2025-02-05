@@ -22,7 +22,7 @@ class ResearchFieldRepository implements ResearchFieldRepositoryInterface
     public function getAll(array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
         $cacheKey = "researchFields_all_{$perPage}_page_" . request()->get('page', 1) . "_" . md5(json_encode($filters));
-        
+
         $cacheKeys = Cache::get('researchFields_cache_keys', []);
         $cacheKeys[] = $cacheKey;
         Cache::put('researchFields_cache_keys', array_unique($cacheKeys), 604800);
@@ -56,7 +56,15 @@ class ResearchFieldRepository implements ResearchFieldRepositoryInterface
 
     public function getById(string $id): ResearchField
     {
-        return Cache::remember("researchField_{$id}", 3600, function () use ($id) {
+        $cacheKey = "researchField_{$id}";
+
+        $cacheKeys = Cache::get('researchFields', []);
+        if (!in_array($cacheKey, $cacheKeys)) {
+            $cacheKeys[] = $cacheKey;
+            Cache::put('researchFields', $cacheKeys, 604800);
+        }
+
+        return Cache::remember($cacheKey, 604800, function () use ($id) {
             $query = ResearchField::query();
 
             $query->with(['lecturers']);

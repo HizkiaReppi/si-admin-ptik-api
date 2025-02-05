@@ -66,7 +66,15 @@ class LecturerRepository implements LecturerRepositoryInterface
 
     public function getById(string $id, array $relations = []): Lecturer
     {
-        return Cache::remember("lecturer_{$id}", 3600, function () use ($id, $relations) {
+        $cacheKey = "lecturer_" . $id;
+
+        $cacheKeys = Cache::get('lecturers_cache_keys', []);
+        if (!in_array($cacheKey, $cacheKeys)) {
+            $cacheKeys[] = $cacheKey;
+            Cache::put('lecturers_cache_keys', $cacheKeys, 3600);
+        }
+        
+        return Cache::remember($cacheKey, 3600, function () use ($id, $relations) {
             $query = Lecturer::query();
 
             if (!empty($relations)) {
