@@ -34,6 +34,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'role' => static::$role ??= 'admin',
             'photo' => null,
+            'gender' => fake()->randomElement(['Male', 'Female']),
             'last_activity' => null,
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Lecturers\Education;
 use App\Models\Lecturers\Experience;
+use App\Models\Lecturers\LecturerProfile;
 use App\Models\Lecturers\ResearchField;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,6 +39,16 @@ class Lecturer extends Model
     }
 
     /**
+     * Get the students for the lecturer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
      * Get the educations for the lecturer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -65,6 +76,16 @@ class Lecturer extends Model
     public function researchFields(): BelongsToMany
     {
         return $this->belongsToMany(ResearchField::class, 'lecturer_research_fields', 'lecturer_id', 'research_field_id');
+    }
+
+    /**
+     * Get the profiles for the lecturer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function profiles(): HasMany
+    {
+        return $this->hasMany(LecturerProfile::class);
     }
 
     /**
