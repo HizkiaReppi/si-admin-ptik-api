@@ -76,7 +76,7 @@ class StudentRepository implements StudentRepositoryInterface
 
     public function getById(string $id, array $relations = []): Student
     {
-        $cacheKey = "student_" . $id;
+        $cacheKey = "student_{$id}";
 
         $cacheKeys = Cache::get('students_cache_keys', []);
         if (!in_array($cacheKey, $cacheKeys)) {
