@@ -39,7 +39,7 @@ class Student extends Model
 
     /**
      * Get the first supervisor for the student.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function firstSupervisor(): BelongsTo
@@ -49,7 +49,7 @@ class Student extends Model
 
     /**
      * Get the second supervisor for the student.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function secondSupervisor(): BelongsTo
@@ -59,7 +59,7 @@ class Student extends Model
 
     /**
      * Get the student information.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function information(): HasOne
@@ -69,7 +69,7 @@ class Student extends Model
 
     /**
      * Get the student addresses.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function addresses(): HasMany
@@ -79,7 +79,7 @@ class Student extends Model
 
     /**
      * Get the student parents.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function parents(): HasOne

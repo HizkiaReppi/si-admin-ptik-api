@@ -10,7 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StudentParent extends Model
 {
+    /** @use HasFactory<\Database\Factories\Students\StudentParentFactory> */
     use HasFactory, HasUuids;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'student_parents';
 
     /**
      * The attributes that are mass assignable.
