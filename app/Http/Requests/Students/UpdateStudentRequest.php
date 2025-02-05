@@ -21,9 +21,17 @@ class UpdateStudentRequest extends StoreStudentRequest
      */
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
-            'email' => ['required', 'string', 'email', 'max:255', 'min:4', Rule::unique('users', 'email')->ignore($this->student->user)],
-            'nim' => ['required', 'string', 'max:15', Rule::unique('students', 'nim')->ignore($this->student)],
-        ]);
+        $rules = parent::rules();
+
+        unset($rules['photo']);
+
+        if ($this->hasFile('photo')) {
+            $rules['photo'] = ['image', 'mimes:png,jpg,jpeg', 'max:2048'];
+        }
+
+        $rules['email'] = ['required', 'string', 'email', 'max:255', 'min:4', Rule::unique('users', 'email')->ignore($this->student->user)];
+        $rules['nim'] = ['required', 'string', 'max:15', Rule::unique('students', 'nim')->ignore($this->student)];
+
+        return $rules;
     }
 }

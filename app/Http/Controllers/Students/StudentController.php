@@ -87,7 +87,7 @@ class StudentController extends Controller
         } catch (ResourceNotFoundException $e) {
             return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.');
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
         }
     }
 

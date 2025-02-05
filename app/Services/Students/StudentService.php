@@ -69,6 +69,10 @@ class StudentService
                     $data['photo'] = $filePath;
                 }
 
+                $data['lecturer_id_1'] = $data['lecturerId1'];
+                $data['lecturer_id_2'] = $data['lecturerId2'];
+                unset($data['lecturerId1'], $data['lecturerId2']);
+
                 $result = $this->studentRepository->store($this->formatterHelper->camelToSnake($data));
 
                 if (!$result) {
@@ -105,6 +109,10 @@ class StudentService
                         }
                     }
                 }
+
+                $data['lecturer_id_1'] = $data['lecturerId1'];
+                $data['lecturer_id_2'] = $data['lecturerId2'];
+                unset($data['lecturerId1'], $data['lecturerId2']);
 
                 $result = $this->studentRepository->update($this->formatterHelper->camelToSnake($data), $id);
 

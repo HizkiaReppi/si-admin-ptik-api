@@ -154,7 +154,6 @@ class StudentRepository implements StudentRepositoryInterface
 
                 $student->user->update([
                     'name' => $data['name'],
-                    'photo' => $data['photo'] ?? null,
                     'gender' => $data['gender'],
                 ]);
 
@@ -171,6 +170,12 @@ class StudentRepository implements StudentRepositoryInterface
                 if (isset($data['email'])) {
                     $student->user->update([
                         'email' => $data['email'],
+                    ]);
+                }
+
+                if (isset($data['photo'])) {
+                    $student->user->update([
+                        'photo' => $data['photo'] ?? null,
                     ]);
                 }
 
