@@ -1,14 +1,7 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Students;
 
-use App\Classes\ApiResponseClass;
-use App\Models\Lecturer;
-use App\Models\Student;
-use App\Models\User;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class UpdateStudentRequest extends StoreStudentRequest

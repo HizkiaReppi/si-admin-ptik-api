@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Students;
 
 use App\Classes\ApiResponseClass;
 use Illuminate\Contracts\Validation\Validator;
