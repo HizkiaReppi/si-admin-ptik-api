@@ -73,7 +73,7 @@ class LecturerRepository implements LecturerRepositoryInterface
             $cacheKeys[] = $cacheKey;
             Cache::put('lecturers_cache_keys', $cacheKeys, 3600);
         }
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($id, $relations) {
             $query = Lecturer::query();
 

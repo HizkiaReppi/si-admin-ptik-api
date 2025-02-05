@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Students;
 
 use App\Classes\ApiResponseClass;
+use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
@@ -40,10 +41,11 @@ class StudentController extends Controller
         ];
 
         $students = $this->studentService->getAll($filters, ['user'], (int) $perPage);
+
         $pagination = $this->apiResponseHelper->generatePagination($students);
         $students = $students->items();
 
-        return ApiResponseClass::sendResponse(200, 'Method not implemented yet');
+        return ApiResponseClass::sendResponseWithPagination(200, 'Students retrieved successfully', $students, $pagination);
     }
 
     /**
@@ -51,8 +53,19 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request): JsonResponse
     {
-        $students = $this->studentService->create($request->validated());
-        return ApiResponseClass::sendResponse(200, 'Method not implemented yet');
+        try {
+            $validatedData = $request->validated();
+
+            if ($request->hasFile('photo')) {
+                $validatedData['photo'] = $request->file('photo');
+            }
+
+            $student = $this->studentService->create($validatedData);
+
+            return ApiResponseClass::sendResponse(201, 'Student created successfully', $student->toArray());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'Failed to create student:' . $e->getMessage());
+        }
     }
 
     /**
@@ -60,8 +73,22 @@ class StudentController extends Controller
      */
     public function show(Student $student): JsonResponse
     {
-        $student = $this->studentService->getById($student->id);
-        return ApiResponseClass::sendResponse(200, 'Method not implemented yet');
+        try {
+            $student = $this->studentService->getById($student->id, [
+                'user',
+                'firstSupervisor',
+                'secondSupervisor',
+                'information',
+                'addresses',
+                'parents'
+            ]);
+
+            return ApiResponseClass::sendResponse(200, 'Student retrieved successfully', $student->toArray());
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.');
+        }
     }
 
     /**
@@ -69,8 +96,21 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student): JsonResponse
     {
-        $student = $this->studentService->update($student->id, $request->validated());
-        return ApiResponseClass::sendResponse(200, 'Method not implemented yet');
+        try {
+            $validatedData = $request->validated();
+
+            if ($request->hasFile('photo')) {
+                $validatedData['photo'] = $request->file('photo');
+            }
+
+            $student = $this->studentService->update($validatedData, $student->id);
+
+            return ApiResponseClass::sendResponse(200, 'Student updated successfully', $student->toArray());
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
     }
 
     /**
@@ -78,7 +118,13 @@ class StudentController extends Controller
      */
     public function destroy(Student $student): JsonResponse
     {
-        $this->studentService->delete($student->id);
-        return ApiResponseClass::sendResponse(200, 'Method not implemented yet');
+        try {
+            $this->studentService->delete($student->id);
+            return ApiResponseClass::sendResponse(200, 'Student deleted successfully');
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
     }
 }

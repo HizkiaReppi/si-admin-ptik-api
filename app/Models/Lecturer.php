@@ -39,6 +39,16 @@ class Lecturer extends Model
     }
 
     /**
+     * Get the students for the lecturer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
      * Get the educations for the lecturer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
