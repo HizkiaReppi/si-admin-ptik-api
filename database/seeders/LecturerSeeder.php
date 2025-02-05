@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Helpers\LecturerHelper;
 use App\Models\Lecturer;
+use App\Models\Lecturers\Education;
+use App\Models\Lecturers\Experience;
+use App\Models\Lecturers\ResearchField;
 use App\Models\User;
 use Faker\Factory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -32,12 +35,32 @@ class LecturerSeeder extends Seeder
                 'gender' => $gender == 1 ? 'Male' : 'Female',
             ]);
 
-            Lecturer::create([
+            $lecturer = Lecturer::create([
                 'user_id' => $user->id,
                 'nip' => $nip,
                 'nidn' => $nidn,
                 'phone_number' => '08' . sprintf('%09d', $i),
             ]);
+
+            // Assign 1-5 random research fields
+            $lecturer->researchFields()->attach(
+                ResearchField::inRandomOrder()->take(rand(1, 5))->pluck('id')
+            );
+
+            // Assign S1, S2 (some with S3) educations
+            $degrees = ['S1', 'S2'];
+            if (rand(0, 1)) {
+                $degrees[] = 'S3';
+            }
+            foreach ($degrees as $degree) {
+                Education::factory()->create([
+                    'lecturer_id' => $lecturer->id,
+                    'degree' => $degree,
+                ]);
+            }
+
+            // Assign 2-3 experiences
+            Experience::factory(rand(2, 3))->create(['lecturer_id' => $lecturer->id]);
         }
     }
 }
