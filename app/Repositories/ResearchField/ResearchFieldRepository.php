@@ -58,16 +58,16 @@ class ResearchFieldRepository implements ResearchFieldRepositoryInterface
     {
         $cacheKey = "researchField_{$id}";
 
-        $cacheKeys = Cache::get('researchFields', []);
+        $cacheKeys = Cache::get('researchFields_cache_keys', []);
         if (!in_array($cacheKey, $cacheKeys)) {
             $cacheKeys[] = $cacheKey;
-            Cache::put('researchFields', $cacheKeys, 604800);
+            Cache::put('researchFields_cache_keys', $cacheKeys, 604800);
         }
 
         return Cache::remember($cacheKey, 604800, function () use ($id) {
             $query = ResearchField::query();
 
-            $query->with(['lecturers']);
+            $query->with(['lecturers', 'lecturers.user']);
 
             $researchField = $query->find($id);
 
