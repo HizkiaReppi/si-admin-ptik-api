@@ -92,7 +92,7 @@ class LecturerRepository implements LecturerRepositoryInterface
 
                 if (isset($lecturer->firstSupervisedStudents)) {
                     $students = $students->merge(
-                        $lecturer->firstSupervisedStudents->map(function ($student) {
+                        $lecturer->firstSupervisedStudents->load('user')->map(function ($student) {
                             $student->supervision_status = 'Supervised 1';
                             return $student;
                         })
@@ -101,7 +101,7 @@ class LecturerRepository implements LecturerRepositoryInterface
 
                 if (isset($lecturer->secondSupervisedStudents)) {
                     $students = $students->merge(
-                        $lecturer->secondSupervisedStudents->map(function ($student) {
+                        $lecturer->secondSupervisedStudents->load('user')->map(function ($student) {
                             $student->supervision_status = 'Supervised 2';
                             return $student;
                         })

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Students\StudentAddress;
 use App\Models\Students\StudentInformation;
 use App\Models\Students\StudentParent;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -85,5 +86,10 @@ class Student extends Model
     public function parents(): HasOne
     {
         return $this->hasOne(StudentParent::class);
+    }
+
+    protected function fullname(): Attribute
+    {
+        return Attribute::get(fn () => $this->user->name ?? null);
     }
 }
