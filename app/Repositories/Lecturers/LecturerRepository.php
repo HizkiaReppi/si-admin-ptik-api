@@ -87,6 +87,32 @@ class LecturerRepository implements LecturerRepositoryInterface
                 throw new ResourceNotFoundException("Lecturer data not found");
             }
 
+            if (in_array('firstSupervisedStudents', $relations) || in_array('secondSupervisedStudents', $relations)) {
+                $students = collect();
+
+                if (isset($lecturer->firstSupervisedStudents)) {
+                    $students = $students->merge(
+                        $lecturer->firstSupervisedStudents->map(function ($student) {
+                            $student->supervision_status = 'Supervised 1';
+                            return $student;
+                        })
+                    );
+                }
+
+                if (isset($lecturer->secondSupervisedStudents)) {
+                    $students = $students->merge(
+                        $lecturer->secondSupervisedStudents->map(function ($student) {
+                            $student->supervision_status = 'Supervised 2';
+                            return $student;
+                        })
+                    );
+                }
+
+                $lecturer->students = $students->values();
+                unset($lecturer->firstSupervisedStudents);
+                unset($lecturer->secondSupervisedStudents);
+            }
+
             return $lecturer;
         });
     }

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Lecturer extends Model
 {
@@ -24,8 +25,16 @@ class Lecturer extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id', 'nip', 'nidn', 'front_degree', 'back_degree',
-        'position', 'rank', 'type', 'phone_number', 'address',
+        'user_id',
+        'nip',
+        'nidn',
+        'front_degree',
+        'back_degree',
+        'position',
+        'rank',
+        'type',
+        'phone_number',
+        'address',
     ];
 
     /**
@@ -39,13 +48,19 @@ class Lecturer extends Model
     }
 
     /**
-     * Get the students for the lecturer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the students where the lecturer is the first supervisor.
      */
-    public function students(): HasMany
+    public function firstSupervisedStudents(): HasMany
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class, 'lecturer_id_1');
+    }
+
+    /**
+     * Get the students where the lecturer is the second supervisor.
+     */
+    public function secondSupervisedStudents(): HasMany
+    {
+        return $this->hasMany(Student::class, 'lecturer_id_2');
     }
 
     /**
@@ -104,5 +119,15 @@ class Lecturer extends Model
         } else {
             return $this->user->name;
         }
+    }
+
+    /**
+     * Get the students supervised by the lecturer.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getSupervisedStudentsAttribute(): Collection
+    {
+        return $this->firstSupervisedStudents->merge($this->secondSupervisedStudents);
     }
 }
