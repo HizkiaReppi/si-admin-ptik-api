@@ -9,6 +9,7 @@ use App\Http\Controllers\Lecturers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchField\ResearchFieldController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentInformationController;
+use App\Http\Controllers\Students\StudentAddressController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -67,6 +68,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/students/{student_id}/information/details', [StudentInformationController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.information.show');
         Route::put('/students/{student_id}/information/update', [StudentInformationController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.information.update');
         Route::delete('/students/{student_id}/information/{student_information_id}', [StudentInformationController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.information.destroy');
+
+        // Student Address
+        Route::get('/students/{student_id}/address/details', [StudentAddressController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.address.show');
+        Route::put('/students/{student_id}/address/update', [StudentAddressController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.address.update');
+        Route::delete('/students/{student_id}/address/{student_address_id}', [StudentAddressController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.address.destroy');
 
         // External API
         Route::get('/external/teaching-history/{lecturerId}', [TeachingHistoryController::class, 'getTeachingHistory'])->middleware(CacheResponse::class)->name('api.external.teaching-history');

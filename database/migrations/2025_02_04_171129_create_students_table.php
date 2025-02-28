@@ -44,7 +44,6 @@ return new class extends Migration
             $table->string('village', 50);
             $table->string('postal_code', 10)->nullable();
             $table->text('address')->nullable();
-            $table->enum('type', ['domicile', 'origin'])->default('domicile');
             $table->timestamps();
         });
 
