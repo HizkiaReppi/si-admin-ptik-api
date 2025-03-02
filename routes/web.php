@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\External\TeachingHistoryController;
+use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
 use App\Http\Controllers\Lecturers\LecturerEducationController;
 use App\Http\Controllers\Lecturers\LecturerExperienceController;
@@ -39,6 +40,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
         Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
 
+        // Head Of Departments
+        Route::apiResource('/head-of-departments', HeadOfDepartmentController::class)->names('api.head-of-departments')->except(['index', 'show']);
+        Route::get('/head-of-departments', [HeadOfDepartmentController::class, 'index'])->middleware(CacheResponse::class)->name('api.head-of-departments.index');
+        Route::get('/head-of-departments/{head_of_department}', [HeadOfDepartmentController::class, 'show'])->middleware(CacheResponse::class)->name('api.head-of-departments.show');
+
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
         Route::get('/research-fields', [ResearchFieldController::class, 'index'])->middleware(CacheResponse::class)->name('api.research-fields.index');
@@ -68,12 +74,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/students/{student_id}/information/details', [StudentInformationController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.information.show');
         Route::put('/students/{student_id}/information/update', [StudentInformationController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.information.update');
         Route::delete('/students/{student_id}/information/{student_information_id}', [StudentInformationController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.information.destroy');
-        
+
         // Student Address
         Route::get('/students/{student_id}/address/details', [StudentAddressController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.address.show');
         Route::put('/students/{student_id}/address/update', [StudentAddressController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.address.update');
         Route::delete('/students/{student_id}/address/{student_address_id}', [StudentAddressController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.address.destroy');
-        
+
         // Student Parents
         Route::get('/students/{student_id}/parents/details', [StudentParentsController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.parents.show');
         Route::put('/students/{student_id}/parents/update', [StudentParentsController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.parents.update');
