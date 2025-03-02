@@ -210,13 +210,13 @@ class LecturerRepository implements LecturerRepositoryInterface
     {
         DB::beginTransaction();
         try {
-            $lecturer = Lecturer::find($id);
+            $lecturer = Lecturer::with('user')->find($id);
 
             if (!$lecturer) {
                 throw new ResourceNotFoundException("Lecturer data not found");
             }
 
-            $photo = $lecturer->photo;
+            $photo = $lecturer->user->photo;
 
             $lecturer->user->delete();
             $lecturer->delete();
