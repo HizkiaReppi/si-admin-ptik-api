@@ -62,6 +62,7 @@ class HeadOfDepartmentRepository implements HeadOfDepartmentRepositoryInterface
                     'role' => 'HoD',
                     'gender' => $lecturer->user->gender,
                     'photo' => $lecturer->user->photo ?? null,
+                    'email_verified_at' => now(),
                 ]);
 
                 $headOfDepartment = HeadOfDepartment::create([

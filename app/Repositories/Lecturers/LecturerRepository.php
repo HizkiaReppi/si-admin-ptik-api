@@ -129,6 +129,7 @@ class LecturerRepository implements LecturerRepositoryInterface
                     'role' => 'lecturer',
                     'gender' => $data['gender'],
                     'photo' => $data['photo'] ?? null,
+                    'email_verified_at' => now(),
                 ]);
 
                 $lecturerData = Lecturer::create([
