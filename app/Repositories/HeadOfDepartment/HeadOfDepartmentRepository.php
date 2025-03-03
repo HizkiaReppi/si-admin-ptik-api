@@ -41,6 +41,13 @@ class HeadOfDepartmentRepository implements HeadOfDepartmentRepositoryInterface
     {
         try {
             return DB::transaction(function () use ($data) {
+                $existingHeadOfDepartment = HeadOfDepartment::where('role', $data['role'])->first();
+
+                if ($existingHeadOfDepartment) {
+                    $existingHeadOfDepartment->delete();
+                    $existingHeadOfDepartment->user->delete();
+                }
+
                 $lecturer = Lecturer::with('user')->find($data['lecturer_id']);
 
                 if(!$lecturer) {
