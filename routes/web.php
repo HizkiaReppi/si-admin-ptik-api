@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\External\TeachingHistoryController;
 use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
@@ -44,6 +45,11 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/head-of-departments', HeadOfDepartmentController::class)->names('api.head-of-departments')->except(['index', 'show']);
         Route::get('/head-of-departments', [HeadOfDepartmentController::class, 'index'])->middleware(CacheResponse::class)->name('api.head-of-departments.index');
         Route::get('/head-of-departments/{head_of_department}', [HeadOfDepartmentController::class, 'show'])->middleware(CacheResponse::class)->name('api.head-of-departments.show');
+
+        // Administrators
+        Route::apiResource('/administrators', AdminController::class)->names('api.administrators')->except(['index', 'show']);
+        Route::get('/administrators', [AdminController::class, 'index'])->middleware(CacheResponse::class)->name('api.administrators.index');
+        Route::get('/administrators/{administrator}', [AdminController::class, 'show'])->middleware(CacheResponse::class)->name('api.administrators.show');
 
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
