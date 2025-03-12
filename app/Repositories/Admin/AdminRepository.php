@@ -67,12 +67,29 @@ class AdminRepository implements AdminRepositoryInterface
 
                 $user->update([
                     'name' => $data['name'],
-                    'username' => $data['username'],
-                    'email' => $data['email'],
-                    'password' => bcrypt($data['password']),
                     'gender' => $data['gender'],
-                    'photo' => $data['photo']?? null,
+                    'photo' => $data['photo'] ?? null,
                 ]);
+                
+                if (isset($data['username'])) {
+                    $user->update([
+                        'username' => $data['username']
+                    ]);
+                }
+                
+                if (isset($data['email'])) {
+                    $user->update([
+                        'email' => $data['email']
+                    ]);
+                }
+                
+                if (isset($data['password'])) {
+                    $user->update([
+                        'password' => bcrypt($data['password'])
+                    ]);
+                }
+
+                return $user;
             });
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

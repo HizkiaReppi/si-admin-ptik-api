@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class UpdateAdminRequest extends StoreAdminRequest
@@ -22,15 +23,32 @@ class UpdateAdminRequest extends StoreAdminRequest
     public function rules(): array
     {
         $rules = parent::rules();
+        $isEmailExist = User::where('email', $this->email)->exists();
+        $isUsernameExist = User::where('username', $this->username)->exists();
 
-        unset($rules['photo']);
+        unset($rules['photo'], $rules['email'], $rules['username'], $rules['password']);
 
         if ($this->hasFile('photo')) {
             $rules['photo'] = ['image', 'mimes:png,jpg,jpeg', 'max:2048'];
         }
 
-        $rules['email'] = ['required', 'string', 'email', 'max:255', 'min:4', Rule::unique('users', 'email')->ignore($this->email)];
-        $rules['username'] = ['required', 'string', 'max:15', Rule::unique('users', 'username')->ignore($this->username)];
+        if ($this->email && !$isEmailExist) {
+            $rules['email'] = ['required', 'string', 'email', 'max:255', 'min:4', Rule::unique('users', 'email')->ignore($this)];
+        }
+
+        if ($this->username && !$isUsernameExist) {
+            $rules['username'] = ['required', 'string', 'max:15', Rule::unique('users', 'username')->ignore($this)];
+        }
+
+        if ($this->password) {
+            $rules['password'] = [
+                'required',
+                'string',
+                'min:6',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/', // At least 1 uppercase, 1 lowercase, 1 digit, 1 special character
+                'confirmed',
+            ];
+        }
 
         return $rules;
     }
