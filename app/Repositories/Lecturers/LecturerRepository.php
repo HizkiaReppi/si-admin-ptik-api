@@ -87,6 +87,32 @@ class LecturerRepository implements LecturerRepositoryInterface
                 throw new ResourceNotFoundException("Lecturer data not found");
             }
 
+            if (in_array('firstSupervisedStudents', $relations) || in_array('secondSupervisedStudents', $relations)) {
+                $students = collect();
+
+                if (isset($lecturer->firstSupervisedStudents)) {
+                    $students = $students->merge(
+                        $lecturer->firstSupervisedStudents->load('user')->map(function ($student) {
+                            $student->supervision_status = 'Supervised 1';
+                            return $student;
+                        })
+                    );
+                }
+
+                if (isset($lecturer->secondSupervisedStudents)) {
+                    $students = $students->merge(
+                        $lecturer->secondSupervisedStudents->load('user')->map(function ($student) {
+                            $student->supervision_status = 'Supervised 2';
+                            return $student;
+                        })
+                    );
+                }
+
+                $lecturer->students = $students->values();
+                unset($lecturer->firstSupervisedStudents);
+                unset($lecturer->secondSupervisedStudents);
+            }
+
             return $lecturer;
         });
     }
@@ -103,6 +129,7 @@ class LecturerRepository implements LecturerRepositoryInterface
                     'role' => 'lecturer',
                     'gender' => $data['gender'],
                     'photo' => $data['photo'] ?? null,
+                    'email_verified_at' => now(),
                 ]);
 
                 $lecturerData = Lecturer::create([
@@ -184,13 +211,13 @@ class LecturerRepository implements LecturerRepositoryInterface
     {
         DB::beginTransaction();
         try {
-            $lecturer = Lecturer::find($id);
+            $lecturer = Lecturer::with('user')->find($id);
 
             if (!$lecturer) {
                 throw new ResourceNotFoundException("Lecturer data not found");
             }
 
-            $photo = $lecturer->photo;
+            $photo = $lecturer->user->photo;
 
             $lecturer->user->delete();
             $lecturer->delete();

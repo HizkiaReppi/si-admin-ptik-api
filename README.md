@@ -2,6 +2,14 @@
 
 Sistem Informasi Admin PTIK adalah aplikasi berbasis web yang dirancang untuk membantu pengelolaan administrasi di Jurusan Pendidikan Teknologi Informasi dan Komunikasi, Fakultas Teknik, Universitas Negeri Manado.
 
+# Deployment
+
+Aplikasi ini dapat diakses melalui URL berikut:
+
+-   [Frontend 1](https://si-admin-ptik.laboratoriumweb.id/)
+-   [Frontend 2](https://si-admin-ptik.vercel.app/)
+-   [Backend](https://api.si-admin-ptik-api.laboratoriumweb.id/)
+
 ## Fitur Utama
 
 -   **Manajemen Pengguna:**

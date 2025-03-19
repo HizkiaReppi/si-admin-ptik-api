@@ -32,8 +32,8 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt("admin"),
         ]);
 
-        $this->call(LecturerSeeder::class);
         $this->call(ResearchFieldSeeder::class);
+        $this->call(LecturerSeeder::class);
         $this->call(StudentSeeder::class);
     }
 }

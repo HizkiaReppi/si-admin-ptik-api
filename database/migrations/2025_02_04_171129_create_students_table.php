@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('lecturer_id_1')->constrained('lecturers')->onDelete('cascade');
             $table->foreignUuid('lecturer_id_2')->nullable()->constrained('lecturers')->onDelete('cascade');
-            $table->string('nim', 15)->unique()->index();;
+            $table->string('nim', 15)->unique()->index();
             $table->string('entry_year', 4)->index();
             $table->enum('class', ['reguler', 'rpl'])->default('reguler');
             $table->enum('concentration', ['RPL', 'Multimedia', 'TKJ']);
@@ -44,7 +44,6 @@ return new class extends Migration
             $table->string('village', 50);
             $table->string('postal_code', 10)->nullable();
             $table->text('address')->nullable();
-            $table->enum('type', ['domicile', 'origin'])->default('domicile');
             $table->timestamps();
         });
 
