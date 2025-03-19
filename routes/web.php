@@ -13,6 +13,7 @@ use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentInformationController;
 use App\Http\Controllers\Students\StudentAddressController;
 use App\Http\Controllers\Students\StudentParentsController;
+use App\Http\Controllers\Submission\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\ResponseCache\Middlewares\CacheResponse;
@@ -50,6 +51,11 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/administrators', AdminController::class)->names('api.administrators')->except(['index', 'show']);
         Route::get('/administrators', [AdminController::class, 'index'])->middleware(CacheResponse::class)->name('api.administrators.index');
         Route::get('/administrators/{administrator}', [AdminController::class, 'show'])->middleware(CacheResponse::class)->name('api.administrators.show');
+
+        // Categories
+        Route::apiResource('/categories', CategoryController::class)->names('api.categories')->except(['index', 'show']);
+        Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
+        Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
 
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
