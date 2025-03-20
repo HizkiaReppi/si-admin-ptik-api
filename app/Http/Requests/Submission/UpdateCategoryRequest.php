@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Submission;
 
 use App\Models\Category;
 use Illuminate\Validation\Rule;

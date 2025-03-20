@@ -95,7 +95,7 @@ class CategoryRepository implements CategoryRepositoryInterface
                 $category = Category::create([
                     'name' => $data['name'],
                     'slug' => $slug,
-                    'docs_file_path' => $data['docs_file_path'],
+                    'docs_file_path' => $data['docs_file_path'] ?? null,
                 ]);
 
                 if (isset($data['requirements'])) {
