@@ -24,7 +24,7 @@ class SubmissionRepository
                 $query->where('slug', $categorySlug);
             });
 
-            $query->with(['student', 'files']);
+            $query->with(['student', 'student.user', 'files']);
 
             if (!empty($filters['search'])) {
                 $searchTerm = $filters['search'];
