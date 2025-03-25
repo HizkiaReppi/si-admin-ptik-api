@@ -44,6 +44,7 @@ class CategoryRepository implements CategoryRepositoryInterface
                 $sortOrder = $filters['order'];
 
                 if ($sortBy === 'name') {
+                    
                     $query->orderBy('name', $sortOrder);
                 } else {
                     $query->orderBy($sortBy, $sortOrder);

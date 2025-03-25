@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Submission;
 
+use App\Models\Student;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Submission extends Model
 {
-    /** @use HasFactory<\Database\Factories\SubmissionFactory> */
+    /** @use HasFactory<\Database\Factories\Submission\SubmissionFactory> */
     use HasFactory, HasUuids;
 
     /**

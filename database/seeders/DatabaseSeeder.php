@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             HeadOfDepartmentSeeder::class,
             CategorySeeder::class,
             RequirementSeeder::class,
+            SubmissionSeeder::class,
         ]);
     }
 }

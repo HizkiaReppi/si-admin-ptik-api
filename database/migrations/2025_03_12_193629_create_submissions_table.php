@@ -29,6 +29,20 @@ return new class extends Migration
             $table->string('file_path');
             $table->timestamps();
         });
+
+        Schema::create('submission_examiners', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('submission_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('examiner_id')->constrained('lecturers')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('submission_supervisors', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('submission_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('supervisor_id')->constrained('lecturers')->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -36,6 +50,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('submission_supervisors');
+        Schema::dropIfExists('submission_examiners');
         Schema::dropIfExists('submission_files');
         Schema::dropIfExists('submissions');
     }
