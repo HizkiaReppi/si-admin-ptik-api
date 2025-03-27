@@ -20,7 +20,8 @@ class SubmissionFactory extends Factory
     public function definition(): array
     {
         $status = fake()->randomElement(['submitted', 'in_review', 'faculty_review', 'completed', 'rejected']);
-        
+        $created_at = fake()->dateTimeBetween('-1 year', 'now');
+
         return [
             'id' => Str::uuid(),
             'student_id' => Student::inRandomOrder()->first()->id ?? Student::factory(),
@@ -30,6 +31,8 @@ class SubmissionFactory extends Factory
             'document_number' => $status !== 'in_review' && $status !== 'submitted' ?  fake()->optional()->regexify('SK/\d{8}/[a-zA-Z0-9]{5}') : null,
             'generated_file_path' => $status === 'completed' ? fake()->optional()->filePath() : null,
             'rejection_reason' => $status === 'rejected' ? fake()->sentence() : null,
+            'created_at' => $created_at,
+            'updated_at' => fake()->dateTimeBetween($created_at, 'now'),
         ];
     }
 }

@@ -18,9 +18,12 @@ class SubmissionSeeder extends Seeder
     public function run(): void
     {
         Submission::factory(50)->create()->each(function ($submission) {
-            SubmissionFile::factory(random_int(1, 3))->create([
-                'submission_id' => $submission->id,
-            ]);
+            foreach ($submission->category->requirements as $requirement) {
+                SubmissionFile::factory()->create([
+                    'submission_id' => $submission->id,
+                    'file_path' => 'public/file/submissions/' . time() . '_' . $submission->category->slug . '_' . $requirement->name . '.pdf',
+                ]);
+            }
 
             $firstSupervisorId = $submission->student->firstSupervisor->id ?? null;
 
