@@ -47,7 +47,7 @@ class SubmissionRepository
                 }
             }
 
-            $query->orderBy('created_at', 'asc');
+            $query->orderBy('created_at', 'desc');
 
             return $query->paginate($perPage);
         });
