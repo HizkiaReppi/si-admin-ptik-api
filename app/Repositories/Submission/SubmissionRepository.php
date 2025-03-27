@@ -24,7 +24,7 @@ class SubmissionRepository
                 $query->where('slug', $categorySlug);
             });
 
-            $query->with(['student', 'student.user', 'files']);
+            $query->with(['student', 'student.user', 'files', 'category']);
 
             if (!empty($filters['search'])) {
                 $searchTerm = $filters['search'];
@@ -46,6 +46,8 @@ class SubmissionRepository
                     $query->orderBy($sortBy, $sortOrder);
                 }
             }
+
+            $query->orderBy('created_at', 'asc');
 
             return $query->paginate($perPage);
         });
@@ -69,7 +71,7 @@ class SubmissionRepository
                 $query->where('slug', $categorySlug);
             });
 
-            $query->with(['student', 'files']);
+            $query->with(['student', 'student.user', 'files', 'category']);
 
             $submission = $query->find($id);
 
