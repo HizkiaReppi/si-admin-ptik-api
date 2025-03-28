@@ -15,9 +15,9 @@ class SubmissionRepository
 
         $cacheKeys = Cache::get('submissions_cache_keys', []);
         $cacheKeys[] = $cacheKey;
-        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 604800);
+        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 3600);
 
-        return Cache::remember($cacheKey, 604800, function () use ($categorySlug, $filters, $perPage) {
+        return Cache::remember($cacheKey, 3600, function () use ($categorySlug, $filters, $perPage) {
             $query = Submission::query();
 
             $query->whereHas('category', function ($query) use ($categorySlug) {
@@ -53,7 +53,6 @@ class SubmissionRepository
         });
     }
 
-
     public function getById(string $categorySlug, string $id): Submission
     {
         $cacheKey = "submission_{$categorySlug}_{$id}";
@@ -61,10 +60,10 @@ class SubmissionRepository
         $cacheKeys = Cache::get('submissions_cache_keys', []);
         if (!in_array($cacheKey, $cacheKeys)) {
             $cacheKeys[] = $cacheKey;
-            Cache::put('submissions_cache_keys', $cacheKeys, 604800);
+            Cache::put('submissions_cache_keys', $cacheKeys, 3600);
         }
 
-        return Cache::remember($cacheKey, 604800, function () use ($categorySlug, $id) {
+        return Cache::remember($cacheKey, 3600, function () use ($categorySlug, $id) {
             $query = Submission::query();
 
             $query->whereHas('category', function ($query) use ($categorySlug) {
