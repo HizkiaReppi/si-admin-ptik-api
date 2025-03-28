@@ -67,6 +67,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'show']);
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
+        Route::post('/submissions/{category}/{submission}/verify', [SubmissionController::class, 'verify'])->name('api.submissions.verify');
+        Route::post('/submissions/{submission}/reject', [SubmissionController::class, 'reject'])->name('api.submissions.reject');
 
         // Lecturer Educations
         Route::get('/lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.educations.show');

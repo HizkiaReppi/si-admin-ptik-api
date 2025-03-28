@@ -86,4 +86,49 @@ class SubmissionController extends Controller
     {
         //
     }
+
+    /**
+     * Verify a submission and generate document number.
+     */
+    public function verify(Request $request, string $categorySlug, string $id): JsonResponse
+    {
+        $request->validate([
+            'status' => 'required|string|in:in_review,faculty_review,completed',
+        ]);
+
+        $submission = $this->submissionService->verifySubmission(
+            $categorySlug,
+            $id,
+            $request->status,
+            $request->reviewer_name
+        );
+
+        if (!$submission) {
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        return response()->json(['message' => 'Submission verified successfully', 'data' => $submission]);
+    }
+
+    /**
+     * Reject a submission with a reason.
+     */
+    public function reject(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $submission = $this->submissionService->rejectSubmission(
+            $id,
+            $request->reviewer_name,
+            $request->reason
+        );
+
+        if (!$submission) {
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        return response()->json(['message' => 'Submission rejected successfully', 'data' => $submission]);
+    }
 }

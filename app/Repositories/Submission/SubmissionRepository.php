@@ -99,4 +99,48 @@ class SubmissionRepository
     {
         //
     }
+
+    public function updateStatus(
+        string $id,
+        string $status,
+        ?string $reviewerName = null,
+        ?string $rejectionReason = null
+    ): ?Submission {
+        return Submission::where('id', $id)->update([
+            'status' => $status,
+            'reviewer_name' => $reviewerName,
+            'rejection_reason' => $rejectionReason
+        ]);
+    }
+
+    public function updateDocumentPath(
+        string $id,
+        string $documentNumber,
+        string $documentDate,
+        string $filePath
+    ): ?Submission {
+        return Submission::where('id', $id)->update([
+            'document_number' => $documentNumber,
+            'document_date' => $documentDate,
+            'generated_file_path' => $filePath,
+        ]);
+    }
+
+    public function getLastDocumentNumber(): string
+    {
+        $currentYear = date('Y');
+
+        $lastSubmission = Submission::where('document_number', 'LIKE', "%/{$currentYear}")
+            ->orderBy('document_number', 'desc')
+            ->first();
+
+        if (!$lastSubmission) {
+            return '0001';
+        }
+
+        preg_match('/^(\d+)/', $lastSubmission->document_number, $matches);
+        $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
+
+        return str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+    }
 }

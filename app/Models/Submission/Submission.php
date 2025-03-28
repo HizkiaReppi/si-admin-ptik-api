@@ -20,7 +20,10 @@ class Submission extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['category_id', 'student_id', 'status', 'reviewer_name', 'document_number', 'generated_file_path', 'rejection_reason'];
+    protected $fillable = [
+        'category_id', 'student_id', 'status', 'reviewer_name', 'document_number',
+        'document_date', 'generated_file_path', 'rejection_reason',
+    ];
 
     public function files(): HasMany
     {
