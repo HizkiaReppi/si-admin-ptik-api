@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Submission;
 
 use App\Classes\ApiResponseClass;
 use Illuminate\Contracts\Validation\Validator;
@@ -27,9 +27,10 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2', 'max:255', Rule::unique('categories')],
+            'docs_file_path' => ['nullable', 'file', 'mimes:pdf,doc,docx'],
             'requirements' => ['sometimes', 'array'],
             'requirements.*.name' => ['required', 'string', 'max:255'],
-            'requirements.*.type ' => ['required', 'string', Rule::in(['document', 'photo', 'text'])],
+            'requirements.*.type' => ['required', 'string', Rule::in(['document', 'photo', 'text'])],
             'requirements.*.file' => ['sometimes', 'file', 'mimes:pdf,doc,docx'],
         ];
     }

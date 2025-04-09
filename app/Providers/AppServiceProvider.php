@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use App\Models\HeadOfDepartment;
 use App\Models\Lecturer;
 use App\Models\Lecturers\ResearchField;
 use App\Models\Student;
 use App\Models\User;
 use App\Observers\AdministratorObserver;
+use App\Observers\CategoryObserver;
 use App\Observers\HeadOfDepartmentObserver;
 use App\Observers\LecturerObserver;
 use App\Observers\ResearchFieldObserver;
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         ResearchField::observe(ResearchFieldObserver::class);
         HeadOfDepartment::observe(HeadOfDepartmentObserver::class);
         User::observe(AdministratorObserver::class);
+        Category::observe(CategoryObserver::class);
 
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";

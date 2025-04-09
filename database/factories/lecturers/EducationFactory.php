@@ -23,7 +23,7 @@ class EducationFactory extends Factory
             'degree' => fake()->randomElement(['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3']),
             'field_of_study' => fake()->sentence(3),
             'institution' => fake()->sentence(2),
-            'graduation_year' => fake()->numberBetween(1900, date('Y')),
+            'graduation_year' => fake()->numberBetween(1960, date('Y')),
             'thesis_title' => fake()->sentence(5),
         ];
    }

@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,26 +12,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'id' => Str::uuid(),
-            'name' => "Super Admin",
-            'username' => "superadmin",
-            'email' => "superadmin@gmail.com",
-            'role' => 'super-admin',
-            'password' => bcrypt("superadmin"),
+        $this->call([
+            AdminSeeder::class,
+            ResearchFieldSeeder::class,
+            LecturerSeeder::class,
+            StudentSeeder::class,
+            HeadOfDepartmentSeeder::class,
+            CategorySeeder::class,
+            RequirementSeeder::class,
+            SubmissionSeeder::class,
         ]);
-
-        User::factory()->create([
-            'id' => Str::uuid(),
-            'name' => "Admin",
-            'username' => "admin",
-            'email' => "admin@gmail.com",
-            'role' => 'admin',
-            'password' => bcrypt("admin"),
-        ]);
-
-        $this->call(ResearchFieldSeeder::class);
-        $this->call(LecturerSeeder::class);
-        $this->call(StudentSeeder::class);
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Lecturers\LecturerExperienceController;
 use App\Http\Controllers\Lecturers\LecturerProfileController;
 use App\Http\Controllers\Lecturers\LecturerResearchFieldController;
 use App\Http\Controllers\ResearchField\ResearchFieldController;
+use App\Http\Controllers\Submission\SubmissionController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentInformationController;
 use App\Http\Controllers\Students\StudentAddressController;
@@ -61,6 +62,13 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
         Route::get('/research-fields', [ResearchFieldController::class, 'index'])->middleware(CacheResponse::class)->name('api.research-fields.index');
         Route::get('/research-fields/{research_field}', [ResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.research-fields.show');
+
+        // Submissions
+        Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'show']);
+        Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
+        Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
+        Route::post('/submissions/{category}/{submission}/verify', [SubmissionController::class, 'verify'])->name('api.submissions.verify');
+        Route::post('/submissions/{submission}/reject', [SubmissionController::class, 'reject'])->name('api.submissions.reject');
 
         // Lecturer Educations
         Route::get('/lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.educations.show');

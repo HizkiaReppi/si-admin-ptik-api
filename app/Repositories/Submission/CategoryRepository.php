@@ -44,6 +44,7 @@ class CategoryRepository implements CategoryRepositoryInterface
                 $sortOrder = $filters['order'];
 
                 if ($sortBy === 'name') {
+                    
                     $query->orderBy('name', $sortOrder);
                 } else {
                     $query->orderBy($sortBy, $sortOrder);
@@ -95,7 +96,7 @@ class CategoryRepository implements CategoryRepositoryInterface
                 $category = Category::create([
                     'name' => $data['name'],
                     'slug' => $slug,
-                    'docs_file_path' => $data['docs_file_path'],
+                    'docs_file_path' => $data['docs_file_path'] ?? null,
                 ]);
 
                 if (isset($data['requirements'])) {
