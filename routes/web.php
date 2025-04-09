@@ -64,7 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/research-fields/{research_field}', [ResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.research-fields.show');
 
         // Submissions
-        Route::delete('/submissions/{category}/{submission}', [SubmissionController::class, 'update'])->name('api.submissions.update');
+        Route::delete('/submissions/{category}/{submission}', [SubmissionController::class, 'delete'])->name('api.submissions.delete');
         Route::put('/submissions/{category}/{submission}', [SubmissionController::class, 'update'])->name('api.submissions.update');
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
