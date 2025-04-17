@@ -9,10 +9,12 @@ use App\Models\Category;
 use App\Models\Submission\Submission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Requests\Submission\UpdateSubmissionStatusRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
 use App\Services\Submission\SubmissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
 {
@@ -90,45 +92,31 @@ class SubmissionController extends Controller
     /**
      * Verify a submission and generate document number.
      */
-    public function verify(Request $request, string $categorySlug, string $id): JsonResponse
-    {
-        $request->validate([
-            'status' => 'required|string|in:in_review,faculty_review,completed',
-        ]);
-
-        $submission = $this->submissionService->verifySubmission(
-            $categorySlug,
-            $id,
-            $request->status,
-            $request->reviewer_name
-        );
-
-        if (!$submission) {
-            return response()->json(['message' => 'Submission not found'], 404);
-        }
-
-        return response()->json(['message' => 'Submission verified successfully', 'data' => $submission]);
-    }
-
     /**
-     * Reject a submission with a reason.
+     * Update submission status.
      */
-    public function reject(Request $request, string $id): JsonResponse
+    public function updateStatus(UpdateSubmissionStatusRequest $request, Category $category, Submission $submission): JsonResponse
     {
-        $request->validate([
-            'reason' => 'required|string',
-        ]);
+        try {
+            $submission = $this->submissionService->verify(
+                $category->slug,
+                $submission->id,
+                $request->status,
+                Auth::user()->name,
+                $request->reason,
+                $request->examiners,
+                $request->supervisors
+            );
 
-        $submission = $this->submissionService->rejectSubmission(
-            $id,
-            $request->reviewer_name,
-            $request->reason
-        );
-
-        if (!$submission) {
-            return response()->json(['message' => 'Submission not found'], 404);
+            return response()->json([
+                'data' => $submission,
+                'message' => 'Submission status updated successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => ['general' => [$e->getMessage()]],
+            ], 400);
         }
-
-        return response()->json(['message' => 'Submission rejected successfully', 'data' => $submission]);
     }
 }
