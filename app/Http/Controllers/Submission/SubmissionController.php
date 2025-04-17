@@ -147,7 +147,7 @@ class SubmissionController extends Controller
 
             $path = $templateMergeService->generateSuratSeminarProposal($data);
 
-            return response()->download(storage_path("app/public/{$path}"));
+            return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
         }
     }
 }
