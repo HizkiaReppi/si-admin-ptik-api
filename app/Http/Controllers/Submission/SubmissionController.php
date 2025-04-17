@@ -5,24 +5,24 @@ namespace App\Http\Controllers\Submission;
 use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
+use App\Helpers\StudentHelper;
+use App\Helpers\TextFormattingHelper;
 use App\Models\Category;
 use App\Models\Submission\Submission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\Submission\UpdateSubmissionStatusRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
+use App\Models\HeadOfDepartment;
 use App\Services\Submission\SubmissionService;
+use App\Services\Templates\TemplateMergeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
 {
-    public function __construct(
-        protected SubmissionService $submissionService,
-        protected ApiResponseHelper $apiResponseHelper,
-        protected ApiResponseClass $apiResponseClass
-    ) { }
+    public function __construct(protected SubmissionService $submissionService, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
 
     /**
      * Display a listing of the resource.
@@ -65,7 +65,7 @@ class SubmissionController extends Controller
             $category = $this->submissionService->getById($category->slug, $submission->id);
             return $this->apiResponseClass->sendResponse(200, 'Submission retrieved successfully', $category->toArray());
         } catch (ResourceNotFoundException $e) {
-           if($e->getCode() === 409) {
+            if ($e->getCode() === 409) {
                 return $this->apiResponseClass->sendError(409, $e->getMessage());
             } else {
                 return $this->apiResponseClass->sendError(500, 'An error occurred. Please try again later.');
@@ -98,25 +98,56 @@ class SubmissionController extends Controller
     public function updateStatus(UpdateSubmissionStatusRequest $request, Category $category, Submission $submission): JsonResponse
     {
         try {
-            $submission = $this->submissionService->verify(
-                $category->slug,
-                $submission->id,
-                $request->status,
-                Auth::user()->name,
-                $request->reason,
-                $request->examiners,
-                $request->supervisors
-            );
+            $submission = $this->submissionService->verify($category->slug, $submission->id, $request->status, Auth::user()->name, $request->reason, $request->examiners, $request->supervisors);
 
-            return response()->json([
-                'data' => $submission,
-                'message' => 'Submission status updated successfully.',
-            ], 200);
+            return response()->json(
+                [
+                    'data' => $submission,
+                    'message' => 'Submission status updated successfully.',
+                ],
+                200,
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'errors' => ['general' => [$e->getMessage()]],
-            ], 400);
+            return response()->json(
+                [
+                    'message' => $e->getMessage(),
+                    'errors' => ['general' => [$e->getMessage()]],
+                ],
+                400,
+            );
+        }
+    }
+
+    public function generateDocument(
+        Category $category, 
+        Submission $submission, 
+        TemplateMergeService $templateMergeService, 
+        TextFormattingHelper $textFormattingHelper, 
+        StudentHelper $studentHelper
+    ) {
+        $submission->load(['student.user', 'student.firstSupervisor.user', 'student.secondSupervisor.user', 'examiners.examiner.user', 'supervisors.supervisor.user']);
+
+        $headOfDepartment = HeadOfDepartment::where('role', 'kajur')->with('lecturer.user')->first();
+
+        if ($category->slug === 'sk-seminar-proposal') {
+            $data = [
+                'documentNumber' => $submission->document_number,
+                'studentName' => $submission->student->user->name,
+                'studentNim' => $submission->student->nim,
+                'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
+                'thesisTitle' => $submission->thesis_title ?? '-',
+                'studentSupervisor' => $submission->student->firstSupervisor?->full_name ?? '-',
+                'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
+                'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
+                'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
+                'documentDate' => $submission->document_date,
+                'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+            ];
+
+            $path = $templateMergeService->generateSuratSeminarProposal($data);
+
+            return response()->download(storage_path("app/public/{$path}"));
         }
     }
 }
