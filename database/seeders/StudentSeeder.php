@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Lecturer;
 use App\Models\Student;
+use App\Models\Students\StudentAddress;
+use App\Models\Students\StudentInformation;
+use App\Models\Students\StudentParent;
 use App\Models\User;
 use Faker\Factory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -36,12 +39,24 @@ class StudentSeeder extends Seeder
             $supervisor_1 = Lecturer::inRandomOrder()->first();
             $supervisor_2 = rand(0, 1) ? Lecturer::inRandomOrder()->first() : null; 
 
-            Student::factory()->create([
+            $student = Student::factory()->create([
                 'user_id' => $user->id,
                 'lecturer_id_1' => $supervisor_1->id,
                 'lecturer_id_2' => $supervisor_2->id ?? null,
                 'nim' => $nim,
                 'entry_year' => $year,
+            ]);
+
+            StudentInformation::factory()->create([
+                'student_id' => $student->id
+            ]);
+
+            StudentAddress::factory()->create([
+                'student_id' => $student->id,
+            ]);
+
+            StudentParent::factory()->create([
+                'student_id' => $student->id,
             ]);
         }
     }

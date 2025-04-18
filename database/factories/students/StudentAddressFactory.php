@@ -26,7 +26,6 @@ class StudentAddressFactory extends Factory
             'village' => fake()->streetSuffix(),
             'postal_code' => fake()->postcode(),
             'address' => fake()->address(),
-            'type' => fake()->randomElement(['domicile', 'origin']),
         ];
    }
 }

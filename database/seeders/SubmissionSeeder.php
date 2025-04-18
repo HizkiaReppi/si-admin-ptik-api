@@ -19,10 +19,25 @@ class SubmissionSeeder extends Seeder
     {
         Submission::factory(50)->create()->each(function ($submission) {
             foreach ($submission->category->requirements as $requirement) {
-                SubmissionFile::factory()->create([
-                    'submission_id' => $submission->id,
-                    'file_path' => 'public/file/submissions/' . time() . '_' . $submission->category->slug . '_' . $requirement->name . '.pdf',
-                ]);
+                if($requirement->type === 'text') {
+                    SubmissionFile::factory()->create([
+                        'submission_id' => $submission->id,
+                        'file_path' => 'Judul Skripsi Mahasiswa',
+                        'requirement_id' => $requirement->id,
+                    ]);
+                } else if ($requirement->type === 'document') {
+                    SubmissionFile::factory()->create([
+                        'submission_id' => $submission->id,
+                        'file_path' => 'public/file/submissions/' . time() . '_' . $submission->category->slug . '_' . $requirement->name . '.pdf',
+                        'requirement_id' => $requirement->id,
+                    ]);
+                } else if ($requirement->type === 'photo') {
+                    SubmissionFile::factory()->create([
+                        'submission_id' => $submission->id,
+                        'file_path' => 'public/photo/submissions/' . time() . '_' . $submission->category->slug . '_' . $requirement->name . '.png',
+                        'requirement_id' => $requirement->id,
+                    ]);
+                }
             }
 
             $firstSupervisorId = $submission->student->firstSupervisor->id ?? null;

@@ -5,22 +5,24 @@ namespace App\Http\Controllers\Submission;
 use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
+use App\Helpers\StudentHelper;
+use App\Helpers\TextFormattingHelper;
 use App\Models\Category;
 use App\Models\Submission\Submission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Requests\Submission\UpdateSubmissionStatusRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
+use App\Models\HeadOfDepartment;
 use App\Services\Submission\SubmissionService;
+use App\Services\Templates\TemplateMergeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
 {
-    public function __construct(
-        protected SubmissionService $submissionService,
-        protected ApiResponseHelper $apiResponseHelper,
-        protected ApiResponseClass $apiResponseClass
-    ) { }
+    public function __construct(protected SubmissionService $submissionService, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
 
     /**
      * Display a listing of the resource.
@@ -63,7 +65,7 @@ class SubmissionController extends Controller
             $category = $this->submissionService->getById($category->slug, $submission->id);
             return $this->apiResponseClass->sendResponse(200, 'Submission retrieved successfully', $category->toArray());
         } catch (ResourceNotFoundException $e) {
-           if($e->getCode() === 409) {
+            if ($e->getCode() === 409) {
                 return $this->apiResponseClass->sendError(409, $e->getMessage());
             } else {
                 return $this->apiResponseClass->sendError(500, 'An error occurred. Please try again later.');
@@ -90,45 +92,141 @@ class SubmissionController extends Controller
     /**
      * Verify a submission and generate document number.
      */
-    public function verify(Request $request, string $categorySlug, string $id): JsonResponse
+    /**
+     * Update submission status.
+     */
+    public function updateStatus(UpdateSubmissionStatusRequest $request, Category $category, Submission $submission): JsonResponse
     {
-        $request->validate([
-            'status' => 'required|string|in:in_review,faculty_review,completed',
-        ]);
+        try {
+            $submission = $this->submissionService->verify($category->slug, $submission->id, $request->status, Auth::user()->name, $request->reason, $request->examiners, $request->supervisors);
 
-        $submission = $this->submissionService->verifySubmission(
-            $categorySlug,
-            $id,
-            $request->status,
-            $request->reviewer_name
-        );
-
-        if (!$submission) {
-            return response()->json(['message' => 'Submission not found'], 404);
+            return response()->json(
+                [
+                    'data' => $submission,
+                    'message' => 'Submission status updated successfully.',
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'message' => $e->getMessage(),
+                    'errors' => ['general' => [$e->getMessage()]],
+                ],
+                400,
+            );
         }
-
-        return response()->json(['message' => 'Submission verified successfully', 'data' => $submission]);
     }
 
-    /**
-     * Reject a submission with a reason.
-     */
-    public function reject(Request $request, string $id): JsonResponse
-    {
-        $request->validate([
-            'reason' => 'required|string',
-        ]);
+    public function generateDocument(
+        Category $category,
+        Submission $submission,
+        TemplateMergeService $templateMergeService,
+        TextFormattingHelper $textFormattingHelper,
+        StudentHelper $studentHelper
+    ) {
+        $submission->load(['student.user', 'student.information', 'student.firstSupervisor.user', 'student.secondSupervisor.user', 'examiners.examiner.user', 'supervisors.supervisor.user', 'files.requirement']);
 
-        $submission = $this->submissionService->rejectSubmission(
-            $id,
-            $request->reviewer_name,
-            $request->reason
-        );
+        $headOfDepartment = HeadOfDepartment::where('role', 'kajur')->with('lecturer.user')->first();
+        $thesisTitle = $submission->files->where('requirement.name', 'Judul Skripsi')->first()?->file_path ?? '-';
+        
+        switch ($category->slug) {
+            case 'seminar-proposal':
 
-        if (!$submission) {
-            return response()->json(['message' => 'Submission not found'], 404);
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor' => $submission->student->firstSupervisor?->full_name ?? '-',
+                    'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
+                    'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
+                    'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+                ];
+
+                $path = $templateMergeService->generateSuratSeminarProposal($data);
+
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            case 'sk-ujian-hasil-penelitian':
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor1' => $submission->student->firstSupervisor?->full_name ?? '-',
+                    'studentSupervisor2' => $submission->student->secondSupervisor?->full_name ?? '-',
+                    'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
+                    'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
+                    'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+                ];
+                $path = $templateMergeService->generateSuratSeminarHasil($data);
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            case 'permohonan-ujian-komprehensif':
+                $missingFields = [];
+
+                if (!$submission->document_number) $missingFields[] = 'Nomor Dokumen';
+                if (!$submission->student->user->name) $missingFields[] = 'Nama Mahasiswa';
+                if ($submission->student->information->place_of_birth == null) $missingFields[] = 'Tempat Lahir';
+                if ($submission->student->information->date_of_birth == null) $missingFields[] = 'Tanggal Lahir';
+                if (!$submission->student->nim) $missingFields[] = 'NIM';
+                if (!$submission->student->class) $missingFields[] = 'Kelas';
+                if (!$submission->student->entry_year) $missingFields[] = 'Tahun Masuk';
+                if (!$thesisTitle) $missingFields[] = 'Judul Skripsi';
+                if (!$submission->student->firstSupervisor) $missingFields[] = 'Pembimbing 1';
+                if (!$submission->student->secondSupervisor) $missingFields[] = 'Pembimbing 2';
+
+                for ($i = 0; $i < 5; $i++) {
+                    if (empty($submission->examiners[$i]) || empty($submission->examiners[$i]->examiner->full_name)) {
+                        $missingFields[] = "Penguji " . ($i + 1);
+                    }
+                }
+
+                if (!$submission->document_date) $missingFields[] = 'Tanggal Dokumen';
+                if (!$headOfDepartment?->lecturer->full_name) $missingFields[] = 'Nama Ketua Jurusan';
+                if (!$headOfDepartment?->lecturer->nip) $missingFields[] = 'NIP Ketua Jurusan';
+
+                if (count($missingFields) > 0) {
+                    return response()->json([
+                        'message' => 'Data tidak lengkap: ' . implode(', ', $missingFields)
+                    ], 400);
+                }
+
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentPlaceDateOfBirth' => $submission->student->information->place_of_birth . ', ' . \Carbon\Carbon::parse($submission->student->information->date_of_birth)->translatedFormat('d F Y'),
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentClass' => ucfirst($submission->student->class),
+                    'studentEntryYear' => $submission->student->entry_year,
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor1' => $submission->student->firstSupervisor->full_name,
+                    'studentSupervisor2' => $submission->student->secondSupervisor->full_name,
+                    'examiner1' => $submission->examiners[0]->examiner->full_name,
+                    'examiner2' => $submission->examiners[1]->examiner->full_name,
+                    'examiner3' => $submission->examiners[2]->examiner->full_name,
+                    'examiner4' => $submission->examiners[3]->examiner->full_name,
+                    'examiner5' => $submission->examiners[4]->examiner->full_name,
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment->lecturer->full_name,
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment->lecturer->nip),
+                ];
+
+                $path = $templateMergeService->generateSuratUjianKomprehensif($data);
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            default:
+                return response()->json(['message' => 'Invalid category'], 400);
+                break;
         }
-
-        return response()->json(['message' => 'Submission rejected successfully', 'data' => $submission]);
     }
 }

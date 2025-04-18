@@ -4,9 +4,11 @@ namespace App\Services\Submission;
 
 use App\Repositories\Submission\SubmissionRepository;
 use App\Models\Submission\Submission;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SubmissionService
 {
@@ -22,32 +24,98 @@ class SubmissionService
         return $this->repository->getById($categorySlug, $id);
     }
 
-    public function verifySubmission(string $categorySlug, string $id, string $status, string $reviewerName): ?Submission
+    /**
+     * Verify or update submission status.
+     *
+     * @throws Exception
+     */
+    public function verify(string $categorySlug, string $submissionId, string $status, string $reviewerName, ?string $reason = null, ?array $examiners = null, ?array $supervisors = null): Submission
     {
-        if ($status === 'faculty_review') {
-            $submission = $this->repository->getById($categorySlug, $id);
+        DB::beginTransaction();
+
+        try {
+            $submission = $this->repository->getById($categorySlug, $submissionId);
+
             if (!$submission) {
-                return null;
+                throw new Exception('Pengajuan tidak ditemukan.');
             }
 
-            $documentNumberFormat = env('DOCUMENT_NUMBER_FORMAT', "");
+            if ($submission->document_number !== null) {
+                $documentNumber = $submission->document_number;
+            } else {
+                $documentNumber = null;
+            }
 
-            $currentYear = date('Y');
-            $documentNumber = $this->repository->getLastDocumentNumber() . "/{$documentNumberFormat}/{$currentYear}";
+            if ($submission->document_date !== null) {
+                $documentDate = $submission->document_date;
+            } else {
+                $documentDate = null;
+            }
 
-            Carbon::setLocale('id');
-            $documentDate = Carbon::now()->translatedFormat('d F Y');
-            $filePath = "file/documents/{$submission->category->slug}/{$documentNumber}.pdf";
-            Storage::disk('public')->put($filePath, 'ISI SURAT (GENERATE PDF)');
+            if ($status === 'faculty_review') {
+                $documentNumberFormat = env('DOCUMENT_NUMBER_FORMAT', '');
 
-            $this->repository->updateDocumentPath($id, $documentNumber, $documentDate, $filePath);
+                $currentYear = date('Y');
+                $documentNumber = $this->repository->getLastDocumentNumber() . "/{$documentNumberFormat}/{$currentYear}";
+
+                Carbon::setLocale('id');
+                $documentDate = Carbon::now()->translatedFormat('d F Y');
+            }
+
+            $submission = $this->repository->updateStatus($submission, $status, $reviewerName, $reason, $documentNumber, $documentDate);
+
+            // Add examiners if provided
+            if ($examiners && $status === 'faculty_review') {
+                $this->repository->addExaminers($submission, $examiners);
+            }
+
+            // Add supervisors if provided
+            if ($supervisors && $status === 'faculty_review' && $categorySlug === 'permohonan-sk-pembimbing-skripsi') {
+                $this->repository->addSupervisors($submission, $supervisors);
+            }
+
+            DB::commit();
+
+            Log::info('Submission status updated', [
+                'submission_id' => $submissionId,
+                'status' => $status,
+                'reviewer' => $reviewerName,
+            ]);
+
+            return $submission;
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update submission status', [
+                'submission_id' => $submissionId,
+                'status' => $status,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Gagal memperbarui status pengajuan.');
         }
-
-        return $this->repository->updateStatus($id, $status, $reviewerName);
     }
 
-    public function rejectSubmission(string $id, string $reviewerName, string $reason): ?Submission
+    /**
+     * Reject a submission with a reason.
+     *
+     * @throws Exception
+     */
+    public function reject(Submission $submission, string $reason): Submission
     {
-        return $this->repository->updateStatus($id, 'rejected', $reviewerName, $reason);
+        try {
+            $submission = $this->repository->updateStatus($submission, 'rejected', null, $reason);
+
+            Log::info('Submission rejected', [
+                'submission_id' => $submission->id,
+                'reason' => $reason,
+            ]);
+
+            return $submission;
+        } catch (Exception $e) {
+            Log::error('Failed to reject submission', [
+                'submission_id' => $submission->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception('Gagal menolak pengajuan.');
+        }
     }
 }

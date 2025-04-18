@@ -39,4 +39,14 @@ class Submission extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+    public function examiners(): HasMany
+    {
+        return $this->hasMany(SubmissionExaminer::class);
+    }
+
+    public function supervisors(): HasMany
+    {
+        return $this->hasMany(SubmissionSupervisor::class);
+    }
 }

@@ -13,9 +13,7 @@ class CategoryObserver
      */
     public function created(Category $category): void
     {
-        if ($category->role === 'admin') {
-            $this->clearCache($category);
-        }
+        $this->clearCache($category);
     }
 
     /**
@@ -23,9 +21,7 @@ class CategoryObserver
      */
     public function updated(Category $category): void
     {
-        if ($category->role === 'admin') {
-            $this->clearCache($category);
-        }
+        $this->clearCache($category);
     }
 
     /**
@@ -33,9 +29,7 @@ class CategoryObserver
      */
     public function deleted(Category $category): void
     {
-        if ($category->role === 'admin') {
-            $this->clearCache($category);
-        }
+        $this->clearCache($category);
     }
 
     /**
@@ -43,9 +37,7 @@ class CategoryObserver
      */
     public function restored(Category $category): void
     {
-        if ($category->role === 'admin') {
-            $this->clearCache($category);
-        }
+        $this->clearCache($category);
     }
 
     /**
@@ -53,9 +45,7 @@ class CategoryObserver
      */
     public function forceDeleted(Category $category): void
     {
-        if ($category->role === 'admin') {
-            $this->clearCache($category);
-        }
+        $this->clearCache($category);
     }
 
     /**

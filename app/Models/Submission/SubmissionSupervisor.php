@@ -18,7 +18,7 @@ class SubmissionSupervisor extends Model
      *
      * @var list<string>
      */
-    protected $fillable = ['submission_id', 'examiner_id'];
+    protected $fillable = ['submission_id', 'supervisor_id'];
 
     /**
      * Get the submission that the examiner is assigned to.
@@ -31,12 +31,12 @@ class SubmissionSupervisor extends Model
     }
 
     /**
-     * Get the examiner that is assigned to the submission.
+     * Get the supervisor that is assigned to the submission.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function examiner(): BelongsTo
+    public function supervisor(): BelongsTo
     {
-        return $this->belongsTo(Lecturer::class);
+        return $this->belongsTo(Lecturer::class, 'supervisor_id');
     }
 }
