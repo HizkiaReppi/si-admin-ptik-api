@@ -75,7 +75,7 @@ class SubmissionRepository
 
             $query->with([
                 'student', 'student.user', 'student.firstSupervisor', 'student.firstSupervisor.user',
-                'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'category',
+                'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'files.requirement', 'category',
                 'examiners.examiner', 'examiners.examiner.user', 'supervisors.supervisor', 'supervisors.supervisor.user',
             ]);
 

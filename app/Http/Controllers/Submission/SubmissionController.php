@@ -119,35 +119,114 @@ class SubmissionController extends Controller
     }
 
     public function generateDocument(
-        Category $category, 
-        Submission $submission, 
-        TemplateMergeService $templateMergeService, 
-        TextFormattingHelper $textFormattingHelper, 
+        Category $category,
+        Submission $submission,
+        TemplateMergeService $templateMergeService,
+        TextFormattingHelper $textFormattingHelper,
         StudentHelper $studentHelper
     ) {
-        $submission->load(['student.user', 'student.firstSupervisor.user', 'student.secondSupervisor.user', 'examiners.examiner.user', 'supervisors.supervisor.user']);
+        $submission->load(['student.user', 'student.information', 'student.firstSupervisor.user', 'student.secondSupervisor.user', 'examiners.examiner.user', 'supervisors.supervisor.user', 'files.requirement']);
 
         $headOfDepartment = HeadOfDepartment::where('role', 'kajur')->with('lecturer.user')->first();
+        $thesisTitle = $submission->files->where('requirement.name', 'Judul Skripsi')->first()?->file_path ?? '-';
+        
+        switch ($category->slug) {
+            case 'seminar-proposal':
 
-        if ($category->slug === 'sk-seminar-proposal') {
-            $data = [
-                'documentNumber' => $submission->document_number,
-                'studentName' => $submission->student->user->name,
-                'studentNim' => $submission->student->nim,
-                'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
-                'thesisTitle' => $submission->thesis_title ?? '-',
-                'studentSupervisor' => $submission->student->firstSupervisor?->full_name ?? '-',
-                'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
-                'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
-                'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
-                'documentDate' => $submission->document_date,
-                'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
-                'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
-            ];
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor' => $submission->student->firstSupervisor?->full_name ?? '-',
+                    'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
+                    'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
+                    'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+                ];
 
-            $path = $templateMergeService->generateSuratSeminarProposal($data);
+                $path = $templateMergeService->generateSuratSeminarProposal($data);
 
-            return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            case 'sk-ujian-hasil-penelitian':
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor1' => $submission->student->firstSupervisor?->full_name ?? '-',
+                    'studentSupervisor2' => $submission->student->secondSupervisor?->full_name ?? '-',
+                    'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
+                    'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
+                    'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+                ];
+                $path = $templateMergeService->generateSuratSeminarHasil($data);
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            case 'permohonan-ujian-komprehensif':
+                $missingFields = [];
+
+                if (!$submission->document_number) $missingFields[] = 'Nomor Dokumen';
+                if (!$submission->student->user->name) $missingFields[] = 'Nama Mahasiswa';
+                if ($submission->student->information->place_of_birth == null) $missingFields[] = 'Tempat Lahir';
+                if ($submission->student->information->date_of_birth == null) $missingFields[] = 'Tanggal Lahir';
+                if (!$submission->student->nim) $missingFields[] = 'NIM';
+                if (!$submission->student->class) $missingFields[] = 'Kelas';
+                if (!$submission->student->entry_year) $missingFields[] = 'Tahun Masuk';
+                if (!$thesisTitle) $missingFields[] = 'Judul Skripsi';
+                if (!$submission->student->firstSupervisor) $missingFields[] = 'Pembimbing 1';
+                if (!$submission->student->secondSupervisor) $missingFields[] = 'Pembimbing 2';
+
+                for ($i = 0; $i < 5; $i++) {
+                    if (empty($submission->examiners[$i]) || empty($submission->examiners[$i]->examiner->full_name)) {
+                        $missingFields[] = "Penguji " . ($i + 1);
+                    }
+                }
+
+                if (!$submission->document_date) $missingFields[] = 'Tanggal Dokumen';
+                if (!$headOfDepartment?->lecturer->full_name) $missingFields[] = 'Nama Ketua Jurusan';
+                if (!$headOfDepartment?->lecturer->nip) $missingFields[] = 'NIP Ketua Jurusan';
+
+                if (count($missingFields) > 0) {
+                    return response()->json([
+                        'message' => 'Data tidak lengkap: ' . implode(', ', $missingFields)
+                    ], 400);
+                }
+
+                $data = [
+                    'documentNumber' => $submission->document_number,
+                    'studentName' => $submission->student->user->name,
+                    'studentPlaceDateOfBirth' => $submission->student->information->place_of_birth . ', ' . \Carbon\Carbon::parse($submission->student->information->date_of_birth)->translatedFormat('d F Y'),
+                    'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
+                    'studentClass' => ucfirst($submission->student->class),
+                    'studentEntryYear' => $submission->student->entry_year,
+                    'thesisTitle' => $thesisTitle ?? '-',
+                    'studentSupervisor1' => $submission->student->firstSupervisor->full_name,
+                    'studentSupervisor2' => $submission->student->secondSupervisor->full_name,
+                    'examiner1' => $submission->examiners[0]->examiner->full_name,
+                    'examiner2' => $submission->examiners[1]->examiner->full_name,
+                    'examiner3' => $submission->examiners[2]->examiner->full_name,
+                    'examiner4' => $submission->examiners[3]->examiner->full_name,
+                    'examiner5' => $submission->examiners[4]->examiner->full_name,
+                    'documentDate' => $submission->document_date,
+                    'headOfDepartmentName' => $headOfDepartment->lecturer->full_name,
+                    'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment->lecturer->nip),
+                ];
+
+                $path = $templateMergeService->generateSuratUjianKomprehensif($data);
+                return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
+                break;
+            default:
+                return response()->json(['message' => 'Invalid category'], 400);
+                break;
         }
     }
 }
