@@ -40,7 +40,7 @@ class LecturerController extends Controller
             'order' => $order,
         ];
 
-        $lecturers = $this->lecturerService->getLecturers($filters, ['user'], (int) $perPage);
+        $lecturers = $this->lecturerService->getLecturers($filters, ['user', 'researchFields'], (int) $perPage);
 
         $pagination = $this->apiResponseHelper->generatePagination($lecturers);
         $lecturers = $lecturers->items();
