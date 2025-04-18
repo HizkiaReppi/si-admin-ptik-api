@@ -14,7 +14,7 @@ class SubmissionRepository
 {
     public function getAll(string $categorySlug, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $cacheKey = "submission_{$categorySlug}_{$perPage}_page_" . request()->get('page', 1) . "_" . md5(json_encode($filters));
+        $cacheKey = "submission_{$categorySlug}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
 
         $cacheKeys = Cache::get('submissions_cache_keys', []);
         $cacheKeys[] = $cacheKey;
@@ -73,16 +73,12 @@ class SubmissionRepository
                 $query->where('slug', $categorySlug);
             });
 
-            $query->with([
-                'student', 'student.user', 'student.firstSupervisor', 'student.firstSupervisor.user',
-                'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'files.requirement', 'category',
-                'examiners.examiner', 'examiners.examiner.user', 'supervisors.supervisor', 'supervisors.supervisor.user',
-            ]);
+            $query->with(['student', 'student.user', 'student.firstSupervisor', 'student.firstSupervisor.user', 'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'files.requirement', 'category', 'examiners.examiner', 'examiners.examiner.user', 'supervisors.supervisor', 'supervisors.supervisor.user']);
 
             $submission = $query->find($id);
 
             if (!$submission) {
-                throw new ResourceNotFoundException("Submission data not found");
+                throw new ResourceNotFoundException('Submission data not found');
             }
 
             return $submission;
@@ -92,14 +88,8 @@ class SubmissionRepository
     /**
      * Update submission status and related fields.
      */
-    public function updateStatus(
-        Submission $submission,
-        string $status,
-        ?string $reviewerName = null,
-        ?string $reason = null,
-        ?string $documentNumber = null,
-        ?string $documentDate = null
-    ): Submission {
+    public function updateStatus(Submission $submission, string $status, ?string $reviewerName = null, ?string $reason = null, ?string $documentNumber = null, ?string $documentDate = null): Submission
+    {
         $submission->update([
             'status' => $status,
             'reviewer_name' => $reviewerName,
@@ -116,13 +106,18 @@ class SubmissionRepository
      */
     public function addExaminers(Submission $submission, array $examinerIds): void
     {
-        $data = array_map(fn($examinerId) => [
-            'id' => Str::uuid(),
-            'submission_id' => $submission->id,
-            'examiner_id' => $examinerId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ], $examinerIds);
+        SubmissionExaminer::where('submission_id', $submission->id)->delete();
+
+        $data = array_map(
+            fn($examinerId) => [
+                'id' => Str::uuid(),
+                'submission_id' => $submission->id,
+                'examiner_id' => $examinerId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            $examinerIds,
+        );
 
         SubmissionExaminer::insert($data);
     }
@@ -132,13 +127,18 @@ class SubmissionRepository
      */
     public function addSupervisors(Submission $submission, array $supervisorIds): void
     {
-        $data = array_map(fn($supervisorId) => [
-            'id' => Str::uuid(),
-            'submission_id' => $submission->id,
-            'supervisor_id' => $supervisorId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ], $supervisorIds);
+        SubmissionSupervisor::where('submission_id', $submission->id)->delete();
+
+        $data = array_map(
+            fn($supervisorId) => [
+                'id' => Str::uuid(),
+                'submission_id' => $submission->id,
+                'supervisor_id' => $supervisorId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            $supervisorIds,
+        );
 
         SubmissionSupervisor::insert($data);
     }
@@ -148,10 +148,7 @@ class SubmissionRepository
      */
     public function generateDocumentNumber(string $categoryCode, int $year): string
     {
-        $count = Submission::whereYear('created_at', $year)
-            ->whereHas('category', fn($query) => $query->where('code', $categoryCode))
-            ->whereNotNull('document_number')
-            ->count() + 1;
+        $count = Submission::whereYear('created_at', $year)->whereHas('category', fn($query) => $query->where('code', $categoryCode))->whereNotNull('document_number')->count() + 1;
 
         return sprintf('%s/%03d/%d', $categoryCode, $count, $year);
     }
