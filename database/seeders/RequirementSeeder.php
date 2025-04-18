@@ -43,6 +43,11 @@ class RequirementSeeder extends Seeder
                         'category_id' => $category->id,
                         'name' => 'KRS Semester Berjalan',
                     ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
+                    ]);
                     break;
 
                 case 'SK Ujian Hasil Penelitian':
@@ -66,24 +71,10 @@ class RequirementSeeder extends Seeder
                         'category_id' => $category->id,
                         'name' => 'Draf Skripsi',
                     ]);
-                    break;
-
-                case 'Berita Acara Konversi Nilai MBKM':
                     Requirement::create([
                         'category_id' => $category->id,
-                        'name' => 'Surat Tugas',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Laporan Akhir',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'File Berita Acara',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'KRS Sementara',
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
                     ]);
                     break;
 
@@ -112,9 +103,18 @@ class RequirementSeeder extends Seeder
                         'category_id' => $category->id,
                         'name' => 'Biodata',
                     ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
+                    ]);
                     break;
 
-                case 'Surat Aktif Kuliah':
+                case 'Permohonan SK Pembimbing Skripsi':
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Berita Acara Ujian Proposal',
+                    ]);
                     Requirement::create([
                         'category_id' => $category->id,
                         'name' => 'Slip UKT Terbaru',
@@ -130,6 +130,11 @@ class RequirementSeeder extends Seeder
                         'category_id' => $category->id,
                         'name' => 'Slip UKT Terbaru',
                     ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
+                    ]);
                     break;
 
                 case 'PDPT':
@@ -139,14 +144,29 @@ class RequirementSeeder extends Seeder
                     ]);
                     break;
 
-                case 'Permohonan SK Pembimbing Skripsi':
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Berita Acara Ujian Proposal',
-                    ]);
+                case 'Surat Aktif Kuliah':
                     Requirement::create([
                         'category_id' => $category->id,
                         'name' => 'Slip UKT Terbaru',
+                    ]);
+                    break;
+
+                case 'Berita Acara Konversi Nilai MBKM':
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Surat Tugas',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Laporan Akhir',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'File Berita Acara',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'KRS Sementara',
                     ]);
                     break;
             }

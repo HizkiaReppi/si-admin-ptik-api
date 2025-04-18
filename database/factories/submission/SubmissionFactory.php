@@ -4,6 +4,7 @@ namespace Database\Factories\Submission;
 
 use App\Models\Student;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -28,9 +29,11 @@ class SubmissionFactory extends Factory
             'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
             'status' => $status,
             'reviewer_name' => $status !== 'in_review' && $status !== 'submitted' ? fake()->name() : null,
-            'document_number' => $status !== 'in_review' && $status !== 'submitted' ?  fake()->optional()->regexify('SK/\d{8}/[a-zA-Z0-9]{5}') : null,
-            'generated_file_path' => $status === 'completed' ? fake()->optional()->filePath() : null,
+            'document_number' => $status !== 'in_review' && $status !== 'submitted' ?  fake()->regexify('SK/\d{8}/[a-zA-Z0-9]{5}') : null,
+            'document_date' => $status !== 'in_review' && $status !== 'submitted' ? fake()->dateTimeBetween($created_at, 'now') : null,
+            'generated_file_path' => $status === 'completed' ? fake()->filePath() : null,
             'rejection_reason' => $status === 'rejected' ? fake()->sentence() : null,
+            'reviewer_name' => User::where('role', 'admin')->inRandomOrder()->first()->name ?? User::factory(),
             'created_at' => $created_at,
             'updated_at' => fake()->dateTimeBetween($created_at, 'now'),
         ];
