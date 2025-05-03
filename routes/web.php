@@ -28,6 +28,9 @@ Route::get('/', function () {
 })->name('api.home');
 
 Route::prefix('v1')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
+    Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
+
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -55,9 +58,7 @@ Route::prefix('v1')->group(function () {
 
         // Categories
         Route::apiResource('/categories', CategoryController::class)->names('api.categories')->except(['index', 'show']);
-        Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
-        Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
-
+        
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
         Route::get('/research-fields', [ResearchFieldController::class, 'index'])->middleware(CacheResponse::class)->name('api.research-fields.index');
