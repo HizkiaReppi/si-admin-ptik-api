@@ -1,4 +1,4 @@
-name: Continuous Deployment PTIK Information System to CPanel
+name: Continuous Deployment PTIK Information System to 2 CPanel Servers
 
 on:
   push:
@@ -6,9 +6,11 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploy PTIK Information System Backend to CPanel
+  prepare:
+    name: Build Information System Project
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: build-artifacts
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -23,19 +25,69 @@ jobs:
       - name: Install PHP Dependencies
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      - name: Prepare Deployment Artifacts
+      - name: Laravel Optimize Commands
         run: |
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
           php artisan storage:link
 
-      - name: FTP-Deploy-Action
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./
+          retention-days: 1
+
+  deploy-cpanel-1:
+    name: Deploy to CPanel 1
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: FTP Deploy to CPanel 1
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          exclude: |
+            .git/
+            .git/**
+            vendor/
+            vendor/**
+            node_modules/
+            node_modules/**
+            tests/
+            tests/**
+            storage/framework/cache/*.php
+            storage/framework/views/*.php
+            storage/logs/*.log
+            .env.testing
+            .env.example
+          debug: true
+
+  deploy-cpanel-2:
+    name: Deploy to CPanel 2
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: FTP Deploy to CPanel 2
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER_2 }}
+          username: ${{ secrets.FTP_USERNAME_2 }}
+          password: ${{ secrets.FTP_PASSWORD_2 }}
           local-dir: ./
           exclude: |
             .git/
