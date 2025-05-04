@@ -28,6 +28,9 @@ Route::get('/', function () {
 })->name('api.home');
 
 Route::prefix('v1')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
+    Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
+
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -55,9 +58,7 @@ Route::prefix('v1')->group(function () {
 
         // Categories
         Route::apiResource('/categories', CategoryController::class)->names('api.categories')->except(['index', 'show']);
-        Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
-        Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
-
+        
         // Research Fields
         Route::apiResource('/research-fields', ResearchFieldController::class)->names('api.research-fields')->except(['index', 'show']);
         Route::get('/research-fields', [ResearchFieldController::class, 'index'])->middleware(CacheResponse::class)->name('api.research-fields.index');
@@ -69,13 +70,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
         Route::put('/submissions/{category}/{submission}/status', [SubmissionController::class, 'updateStatus'])->name('api.submissions.update-status');
         Route::get('/submissions/{category}/{submission}/generate-document', [SubmissionController::class, 'generateDocument'])->name('api.submissions.generate-document');
-
-        // preserve from main (optional if needed in new flow)
-        Route::put('/submissions/{category}/{submission}', [SubmissionController::class, 'update'])->name('api.submissions.update');
-        Route::delete('/submissions/{category}/{submission}', [SubmissionController::class, 'delete'])->name('api.submissions.delete');
-        Route::post('/submissions/{category}/{submission}/verify', [SubmissionController::class, 'verify'])->name('api.submissions.verify');
-        Route::post('/submissions/{submission}/reject', [SubmissionController::class, 'reject'])->name('api.submissions.reject');
-
+    
         // Lecturer Educations
         Route::get('/lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.educations.show');
         Route::put('/lecturers/{lecturer_id}/educations/update', [LecturerEducationController::class, 'update'])->name('api.lecturers.educations.update');
