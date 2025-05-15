@@ -45,6 +45,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/students', StudentController::class)->names('api.students')->except(['index', 'show']);
         Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
         Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
+        Route::get('/students/user/{user_id}', [StudentController::class, 'showByUserId'])->middleware(CacheResponse::class)->name('api.students.get-by-user-id');
 
         // Head Of Departments
         Route::apiResource('/head-of-departments', HeadOfDepartmentController::class)->names('api.head-of-departments')->except(['index', 'show']);
