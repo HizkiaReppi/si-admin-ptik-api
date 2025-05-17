@@ -81,6 +81,11 @@ class CategoryRepository implements CategoryRepositoryInterface
         });
     }
 
+    public function getIdBySlug(string $slug): string
+    {
+        return Category::where('slug', $slug)->firstOrFail()->id;
+    }
+
     public function store(array $data): Category
     {
         try {

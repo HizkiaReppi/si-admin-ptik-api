@@ -51,9 +51,20 @@ class SubmissionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubmissionRequest $request)
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => ['required', 'uuid'],
+            'category_slug' => ['required', 'string'],
+            'files' => ['required', 'array'],
+            'files.*.requirement_id' => ['required', 'string'],
+            'files.*.text' => ['nullable', 'string'],
+            'files.*.file' => ['nullable', 'file'],
+        ]);
+
+        $this->submissionService->createSubmissionWithFiles($validated);
+
+        return response()->json(['message' => 'Submission created successfully']);
     }
 
     /**

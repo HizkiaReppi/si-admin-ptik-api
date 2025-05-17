@@ -31,6 +31,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
     Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
 
+    Route::post('/submissions/{category}/store', [SubmissionController::class, 'store'])->name('api.submissions.store');
+
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -66,7 +68,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/research-fields/{research_field}', [ResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.research-fields.show');
 
         // Submissions
-        Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'show', 'update', 'destroy']);
+        Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'store', 'show', 'update', 'destroy']);
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
         Route::put('/submissions/{category}/{submission}/status', [SubmissionController::class, 'updateStatus'])->name('api.submissions.update-status');
