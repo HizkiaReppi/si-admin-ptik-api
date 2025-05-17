@@ -31,7 +31,7 @@ class SubmissionService
         return $this->repository->getById($categorySlug, $id);
     }
 
-    public function createSubmissionWithFiles(array $data): void
+    public function createSubmissionWithFiles(array $data)
     {
         $categoryId = $this->categoryRepository->getIdBySlug($data['category_slug']);
         $student = $this->studentService->getByUserId($data['user_id']);
@@ -43,6 +43,8 @@ class SubmissionService
         ]);
 
         $this->fileService->storeFiles($data['files'], $submission->id);
+
+        return $submission;
     }
 
     /**

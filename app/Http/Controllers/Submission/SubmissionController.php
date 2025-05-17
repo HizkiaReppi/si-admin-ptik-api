@@ -22,7 +22,11 @@ use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
 {
-    public function __construct(protected SubmissionService $submissionService, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
+    public function __construct(
+        protected SubmissionService $submissionService, 
+        protected ApiResponseHelper $apiResponseHelper, 
+        protected ApiResponseClass $apiResponseClass
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -62,9 +66,9 @@ class SubmissionController extends Controller
             'files.*.file' => ['nullable', 'file'],
         ]);
 
-        $this->submissionService->createSubmissionWithFiles($validated);
+        $submission = $this->submissionService->createSubmissionWithFiles($validated);
 
-        return response()->json(['message' => 'Submission created successfully']);
+        return $this->apiResponseClass->sendResponse(200, 'Submission created successfully', $submission->toArray());
     }
 
     /**
