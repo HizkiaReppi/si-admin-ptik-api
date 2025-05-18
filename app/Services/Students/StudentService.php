@@ -171,4 +171,13 @@ class StudentService
             throw new \Exception($e->getMessage());
         }
     }
+
+    public function getCount(): int
+    {
+        try {
+            return $this->studentRepository->countStudents();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

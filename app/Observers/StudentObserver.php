@@ -60,6 +60,7 @@ class StudentObserver
         }
 
         Cache::forget('students_cache_keys');
+        Cache::forget('students_count');
         Cache::forget("student_{$student->id}");
 
         ResponseCache::clear();

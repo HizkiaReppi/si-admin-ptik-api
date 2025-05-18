@@ -238,4 +238,11 @@ class StudentRepository implements StudentRepositoryInterface
             throw new \Exception($e->getMessage());
         }
     }
+
+    public function countStudents(): int
+    {
+        return Cache::remember('students_count', 3600, function () {
+            return Student::count();
+        });
+    }
 }

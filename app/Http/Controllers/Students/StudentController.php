@@ -149,4 +149,14 @@ class StudentController extends Controller
             return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
         }
     }
+
+    public function getCount(): JsonResponse
+    {
+        try {
+            $count = $this->studentService->getCount();
+            return ApiResponseClass::sendResponse(200, 'Student count retrieved successfully', ['count' => $count]);
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
+    }
 }
