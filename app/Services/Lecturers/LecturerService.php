@@ -166,4 +166,18 @@ class LecturerService
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Get the count of lecturers.
+     *
+     * @return int
+     */
+    public function getCount(): int
+    {
+        try {
+            return $this->lecturerRepository->countLecturers();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

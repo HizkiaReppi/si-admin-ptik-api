@@ -60,6 +60,7 @@ class LecturerObserver
         }
 
         Cache::forget('lecturers_cache_keys');
+        Cache::forget('lecturers_count');
         Cache::forget("lecturer_" . $lecturer->id);
 
         ResponseCache::clear();
