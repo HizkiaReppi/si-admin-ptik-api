@@ -141,4 +141,9 @@ class SubmissionService
             throw new Exception('Gagal menolak pengajuan.');
         }
     }
+
+    public function getAllCount(): int
+    {
+        return $this->repository->allSubmissionsCount();
+    }
 }

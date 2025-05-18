@@ -244,4 +244,10 @@ class SubmissionController extends Controller
                 break;
         }
     }
+
+    public function getAllCount(): JsonResponse
+    {
+        $count = $this->submissionService->getAllCount();
+        return $this->apiResponseClass->sendResponse(200, 'All Submission counts retrieved successfully', ['count' => $count]);
+    }
 }

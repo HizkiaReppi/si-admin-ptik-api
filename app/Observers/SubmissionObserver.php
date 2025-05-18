@@ -60,6 +60,7 @@ class SubmissionObserver
         }
 
         Cache::forget('submissions_cache_keys');
+        Cache::forget('all_submissions_count');
         Cache::forget("submission_{$submission->category->slug}_{$submission->id}");
 
         ResponseCache::clear();

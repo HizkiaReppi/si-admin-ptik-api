@@ -211,4 +211,11 @@ class SubmissionRepository
             return $submission->load(['files.requirement']);
         });
     }
+
+    public function allSubmissionsCount(): int
+    {
+        return Cache::remember('all_submissions_count', 3600, function () {
+            return Submission::count();
+        });
+    }
 }
