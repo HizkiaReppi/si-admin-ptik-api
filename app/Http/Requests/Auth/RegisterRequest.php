@@ -37,16 +37,22 @@ class RegisterRequest extends FormRequest
                 'required',
                 'string',
                 'min:3',
-                'max:255',
+                'max:20',
                 'unique:' . User::class,
-                'regex:/^[a-z][a-z\d_]*$/'
+                'regex:/^[0-9]*$/'
             ],
             'email' => [
                 'required',
                 'string',
                 'email',
                 'max:255',
-                'unique:' . User::class
+                'unique:' . User::class,
+                'regex:/^[a-zA-Z0-9._%+-]+@unima\.ac\.id$/'
+            ],
+            'lecturer_id' => [
+                'required',
+                'string',
+                'exists:lecturers,id'
             ],
             'password' => [
                 'required',
@@ -72,18 +78,23 @@ class RegisterRequest extends FormRequest
             'name.min' => 'Nama harus memiliki setidaknya 2 karakter.',
             'name.regex' => 'Nama hanya boleh berisi huruf.',
 
-            'username.required' => 'Nama pengguna wajib diisi.',
-            'username.string' => 'Nama pengguna harus berupa teks.',
-            'username.min' => 'Nama pengguna harus memiliki setidaknya 3 karakter.',
-            'username.max' => 'Nama pengguna tidak boleh lebih dari 255 karakter.',
-            'username.unique' => 'Nama pengguna sudah terdaftar.',
-            'username.regex' => 'Nama pengguna hanya boleh berisi huruf kecil, angka, atau underscore, dan harus diawali dengan huruf kecil.',
+            'username.required' => 'Nomor Induk Mahasiswa wajib diisi.',
+            'username.string' => 'Nomor Induk Mahasiswa harus berupa teks.',
+            'username.min' => 'Nomor Induk Mahasiswa harus memiliki setidaknya 3 karakter.',
+            'username.max' => 'Nomor Induk Mahasiswa tidak boleh lebih dari 255 karakter.',
+            'username.unique' => 'Nomor Induk Mahasiswa sudah terdaftar.',
+            'username.regex' => 'Nomor Induk Mahasiswa hanya boleh berisi angka.',
 
             'email.required' => 'Email wajib diisi.',
             'email.string' => 'Email harus berupa teks.',
             'email.email' => 'Format email tidak valid. Contoh: example@gmail.com.',
             'email.max' => 'Email tidak boleh lebih dari 255 karakter.',
             'email.unique' => 'Email sudah terdaftar.',
+            'email.regex' => 'Email harus menggunakan domain unima.ac.id.',
+
+            'lecturer_id.required' => 'Dosen pembimbing akademik wajib diisi.',
+            'lecturer_id.string' => 'Dosen pembimbing akademik harus berupa teks.',
+            'lecturer_id.exists' => 'Dosen pembimbing akademik tidak ditemukan.',
 
             'password.required' => 'Kata sandi wajib diisi.',
             'password.string' => 'Kata sandi harus berupa teks.',
