@@ -32,6 +32,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
     
     Route::post('/submissions/{category}/store', [SubmissionController::class, 'store'])->name('api.submissions.store');
+    Route::get('/submissions/{user_id}/all', [SubmissionController::class, 'getAllByUserId'])->middleware(CacheResponse::class)->name('api.submissions.getAllByUserId');
+   
     Route::get('/students/count', [StudentController::class, 'getCount'])->middleware(CacheResponse::class)->name('api.students.count');
     Route::get('/lecturers/count', [LecturerController::class, 'getCount'])->middleware(CacheResponse::class)->name('api.lecturers.count');
     Route::get('/submissions/count', [SubmissionController::class, 'getAllCount'])->middleware(CacheResponse::class)->name('api.submissions.getAllCount');

@@ -146,4 +146,9 @@ class SubmissionService
     {
         return $this->repository->allSubmissionsCount();
     }
+
+    public function getAllByUserId(string $userId, array $filters = [], int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->repository->getAllByUserId($userId, $filters, $perPage);
+    }
 }

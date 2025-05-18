@@ -218,4 +218,48 @@ class SubmissionRepository
             return Submission::count();
         });
     }
+
+    public function getAllByUserId(string $userId, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    {
+        $cacheKey = "submission_{$userId}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
+
+        $cacheKeys = Cache::get('submissions_cache_keys', []);
+        $cacheKeys[] = $cacheKey;
+        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 3600);
+
+        return Cache::remember($cacheKey, 3600, function () use ($userId, $filters, $perPage) {
+            $query = Submission::query();
+
+            $query->whereHas('student', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            });
+
+            $query->with(['student', 'student.user', 'files', 'category']);
+
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
+
+                $query->whereHas('student', function ($query) use ($searchTerm) {
+                    $query->whereHas('user', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%");
+                    });
+                });
+            }
+
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                if ($sortBy === 'status') {
+                    $query->orderBy('status', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            }
+
+            $query->orderBy('created_at', 'desc');
+
+            return $query->paginate($perPage);
+        });
+    }
 }
