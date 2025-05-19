@@ -22,7 +22,11 @@ use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
 {
-    public function __construct(protected SubmissionService $submissionService, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
+    public function __construct(
+        protected SubmissionService $submissionService, 
+        protected ApiResponseHelper $apiResponseHelper, 
+        protected ApiResponseClass $apiResponseClass
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -51,9 +55,20 @@ class SubmissionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubmissionRequest $request)
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => ['required', 'uuid'],
+            'category_slug' => ['required', 'string'],
+            'files' => ['required', 'array'],
+            'files.*.requirement_id' => ['required', 'string'],
+            'files.*.text' => ['nullable', 'string'],
+            'files.*.file' => ['nullable', 'file'],
+        ]);
+
+        $submission = $this->submissionService->createSubmissionWithFiles($validated);
+
+        return $this->apiResponseClass->sendResponse(200, 'Submission created successfully', $submission->toArray());
     }
 
     /**
@@ -228,5 +243,32 @@ class SubmissionController extends Controller
                 return response()->json(['message' => 'Invalid category'], 400);
                 break;
         }
+    }
+
+    public function getAllCount(): JsonResponse
+    {
+        $count = $this->submissionService->getAllCount();
+        return $this->apiResponseClass->sendResponse(200, 'All Submission counts retrieved successfully', ['count' => $count]);
+    }
+
+    public function getAllByUserId(string $userId, Request $request): JsonResponse
+    {
+        $search = $request->only('search');
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', null);
+        $order = $request->input('order');
+
+        $filters = [
+            'search' => $search['search'] ?? null,
+            'sortBy' => $sortBy,
+            'order' => $order,
+        ];
+
+        $submissions = $this->submissionService->getAllByUserId($userId, $filters, (int) $perPage);
+
+        $pagination = $this->apiResponseHelper->generatePagination($submissions);
+        $submissions = $submissions->items();
+
+        return $this->apiResponseClass->sendResponseWithPagination(200, 'Submissions retrieved successfully', $submissions, $pagination);
     }
 }

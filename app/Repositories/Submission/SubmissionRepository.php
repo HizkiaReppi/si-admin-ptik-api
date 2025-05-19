@@ -3,11 +3,14 @@
 namespace App\Repositories\Submission;
 
 use App\Exceptions\ResourceNotFoundException;
+use App\Models\Category;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionExaminer;
+use App\Models\Submission\SubmissionFile;
 use App\Models\Submission\SubmissionSupervisor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SubmissionRepository
@@ -83,6 +86,11 @@ class SubmissionRepository
 
             return $submission;
         });
+    }
+
+    public function create(array $data): Submission
+    {
+        return Submission::create($data);
     }
 
     /**
@@ -169,5 +177,89 @@ class SubmissionRepository
         $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
 
         return str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function store(string $categorySlug, string $studentId, array $files): Submission
+    {
+        return DB::transaction(function () use ($categorySlug, $studentId, $files) {
+            $category = Category::where('slug', $categorySlug)->firstOrFail();
+
+            $submission = Submission::create([
+                'category_id' => $category->id,
+                'student_id' => $studentId,
+                'status' => 'submitted',
+                'reviewer_name' => null,
+                'document_number' => null,
+                'document_date' => null,
+                'generated_file_path' => null,
+                'rejection_reason' => null,
+            ]);
+
+            $submissionFiles = array_map(function ($fileData) use ($submission) {
+                return [
+                    'id' => Str::uuid(),
+                    'submission_id' => $submission->id,
+                    'requirement_id' => $fileData['requirement_id'],
+                    'file_path' => $fileData['file_path'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }, $files);
+
+            SubmissionFile::insert($submissionFiles);
+
+            return $submission->load(['files.requirement']);
+        });
+    }
+
+    public function allSubmissionsCount(): int
+    {
+        return Cache::remember('all_submissions_count', 3600, function () {
+            return Submission::count();
+        });
+    }
+
+    public function getAllByUserId(string $userId, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    {
+        $cacheKey = "submission_{$userId}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
+
+        $cacheKeys = Cache::get('submissions_cache_keys', []);
+        $cacheKeys[] = $cacheKey;
+        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 3600);
+
+        return Cache::remember($cacheKey, 3600, function () use ($userId, $filters, $perPage) {
+            $query = Submission::query();
+
+            $query->whereHas('student', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            });
+
+            $query->with(['student', 'student.user', 'files', 'category']);
+
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
+
+                $query->whereHas('student', function ($query) use ($searchTerm) {
+                    $query->whereHas('user', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%");
+                    });
+                });
+            }
+
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                if ($sortBy === 'status') {
+                    $query->orderBy('status', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            }
+
+            $query->orderBy('created_at', 'desc');
+
+            return $query->paginate($perPage);
+        });
     }
 }

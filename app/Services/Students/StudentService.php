@@ -56,6 +56,20 @@ class StudentService
     }
 
     /**
+     * Get student by user ID with optional relations.
+     */
+    public function getByUserId(string $userId, array $relations = []): Student
+    {
+        try {
+            return $this->studentRepository->getByUserId($userId, $relations);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
      * Create a new student
      */
     public function create(array $data)
@@ -153,6 +167,15 @@ class StudentService
             });
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function getCount(): int
+    {
+        try {
+            return $this->studentRepository->countStudents();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

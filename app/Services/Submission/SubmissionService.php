@@ -4,6 +4,8 @@ namespace App\Services\Submission;
 
 use App\Repositories\Submission\SubmissionRepository;
 use App\Models\Submission\Submission;
+use App\Repositories\Submission\CategoryRepository;
+use App\Services\Students\StudentService;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
@@ -12,7 +14,12 @@ use Illuminate\Support\Facades\Log;
 
 class SubmissionService
 {
-    public function __construct(protected SubmissionRepository $repository) {}
+    public function __construct(
+        protected SubmissionRepository $repository,
+        protected CategoryRepository $categoryRepository,
+        protected SubmissionFileService $fileService,
+        protected StudentService $studentService,
+    ) {}
 
     public function getAll(string $categorySlug, array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
@@ -22,6 +29,22 @@ class SubmissionService
     public function getById(string $categorySlug, string $id): ?Submission
     {
         return $this->repository->getById($categorySlug, $id);
+    }
+
+    public function createSubmissionWithFiles(array $data)
+    {
+        $categoryId = $this->categoryRepository->getIdBySlug($data['category_slug']);
+        $student = $this->studentService->getByUserId($data['user_id']);
+
+        $submission = $this->repository->create([
+            'student_id' => $student->id,
+            'category_id' => $categoryId,
+            'status' => 'submitted',
+        ]);
+
+        $this->fileService->storeFiles($data['files'], $submission->id);
+
+        return $submission;
     }
 
     /**
@@ -117,5 +140,15 @@ class SubmissionService
             ]);
             throw new Exception('Gagal menolak pengajuan.');
         }
+    }
+
+    public function getAllCount(): int
+    {
+        return $this->repository->allSubmissionsCount();
+    }
+
+    public function getAllByUserId(string $userId, array $filters = [], int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->repository->getAllByUserId($userId, $filters, $perPage);
     }
 }

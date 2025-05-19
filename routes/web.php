@@ -30,6 +30,22 @@ Route::get('/', function () {
 Route::prefix('v1')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index'])->middleware(CacheResponse::class)->name('api.categories.index');
     Route::get('/categories/{category}', [CategoryController::class,'show'])->middleware(CacheResponse::class)->name('api.categories.show');
+    
+    Route::post('/submissions/{category}/store', [SubmissionController::class, 'store'])->name('api.submissions.store');
+    Route::get('/submissions/{user_id}/all', [SubmissionController::class, 'getAllByUserId'])->middleware(CacheResponse::class)->name('api.submissions.getAllByUserId');
+   
+    Route::get('/students/count', [StudentController::class, 'getCount'])->middleware(CacheResponse::class)->name('api.students.count');
+    Route::get('/lecturers/count', [LecturerController::class, 'getCount'])->middleware(CacheResponse::class)->name('api.lecturers.count');
+    Route::get('/submissions/count', [SubmissionController::class, 'getAllCount'])->middleware(CacheResponse::class)->name('api.submissions.getAllCount');
+    
+    Route::get('/lecturers', [LecturerController::class, 'index'])->middleware(CacheResponse::class)->name('api.lecturers.index');
+    Route::get('/lecturers/{lecturer}', [LecturerController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.show');
+    
+    Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
+    Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
+    
+    Route::get('/head-of-departments', [HeadOfDepartmentController::class, 'index'])->middleware(CacheResponse::class)->name('api.head-of-departments.index');
+    Route::get('/head-of-departments/{head_of_department}', [HeadOfDepartmentController::class, 'show'])->middleware(CacheResponse::class)->name('api.head-of-departments.show');
 
     Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
@@ -38,19 +54,14 @@ Route::prefix('v1')->group(function () {
 
         // Lecturers
         Route::apiResource('/lecturers', LecturerController::class)->names('api.lecturers')->except(['index', 'show']);
-        Route::get('/lecturers', [LecturerController::class, 'index'])->middleware(CacheResponse::class)->name('api.lecturers.index');
-        Route::get('/lecturers/{lecturer}', [LecturerController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.show');
-
+        
         // Students
         Route::apiResource('/students', StudentController::class)->names('api.students')->except(['index', 'show']);
-        Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
-        Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
+        Route::get('/students/user/{user_id}', [StudentController::class, 'showByUserId'])->middleware(CacheResponse::class)->name('api.students.get-by-user-id');
 
         // Head Of Departments
         Route::apiResource('/head-of-departments', HeadOfDepartmentController::class)->names('api.head-of-departments')->except(['index', 'show']);
-        Route::get('/head-of-departments', [HeadOfDepartmentController::class, 'index'])->middleware(CacheResponse::class)->name('api.head-of-departments.index');
-        Route::get('/head-of-departments/{head_of_department}', [HeadOfDepartmentController::class, 'show'])->middleware(CacheResponse::class)->name('api.head-of-departments.show');
-
+        
         // Administrators
         Route::apiResource('/administrators', AdminController::class)->names('api.administrators')->except(['index', 'show']);
         Route::get('/administrators', [AdminController::class, 'index'])->middleware(CacheResponse::class)->name('api.administrators.index');
@@ -65,7 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/research-fields/{research_field}', [ResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.research-fields.show');
 
         // Submissions
-        Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'show', 'update', 'destroy']);
+        Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'store', 'show', 'update', 'destroy']);
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
         Route::put('/submissions/{category}/{submission}/status', [SubmissionController::class, 'updateStatus'])->name('api.submissions.update-status');

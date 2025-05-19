@@ -91,6 +91,28 @@ class StudentController extends Controller
         }
     }
 
+    public function showByUserId($userId): JsonResponse
+    {
+        try {
+            $student = $this->studentService->getByUserId($userId, [
+                'user',
+                'firstSupervisor',
+                'firstSupervisor.user',
+                'secondSupervisor',
+                'secondSupervisor.user',
+                'information',
+                'addresses',
+                'parents'
+            ]);
+
+            return ApiResponseClass::sendResponse(200, 'Student retrieved successfully', $student->toArray());
+        } catch (ResourceNotFoundException $e) {
+            return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -123,6 +145,16 @@ class StudentController extends Controller
             return ApiResponseClass::sendResponse(200, 'Student deleted successfully');
         } catch (ResourceNotFoundException $e) {
             return ApiResponseClass::sendError($e->getCode(), $e->getMessage());
+        } catch (\Exception $e) {
+            return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
+        }
+    }
+
+    public function getCount(): JsonResponse
+    {
+        try {
+            $count = $this->studentService->getCount();
+            return ApiResponseClass::sendResponse(200, 'Student count retrieved successfully', ['count' => $count]);
         } catch (\Exception $e) {
             return ApiResponseClass::sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
         }

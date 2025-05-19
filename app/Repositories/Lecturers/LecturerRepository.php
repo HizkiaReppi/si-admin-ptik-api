@@ -35,7 +35,7 @@ class LecturerRepository implements LecturerRepositoryInterface
                 $query->with($relations);
             }
 
-            $query->join('users', 'lecturers.user_id', '=', 'users.id')->select(['lecturers.id as id', 'lecturers.nip', 'lecturers.nidn', 'lecturers.front_degree', 'lecturers.back_degree', 'users.name', 'users.email']);
+            $query->join('users', 'lecturers.user_id', '=', 'users.id')->select(['lecturers.id as id', 'lecturers.nip', 'lecturers.nidn', 'lecturers.front_degree', 'lecturers.back_degree', 'users.name', 'users.email', 'users.photo']);
 
             if (!empty($filters['search'])) {
                 $searchTerm = $filters['search'];
@@ -228,6 +228,17 @@ class LecturerRepository implements LecturerRepositoryInterface
                 "lecturer" => $lecturer,
                 "photo" => $photo
             ];
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function countLecturers(): int
+    {
+        try {
+            return Cache::remember('lecturers_count', 3600, function () {
+                return Lecturer::count();
+            });
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

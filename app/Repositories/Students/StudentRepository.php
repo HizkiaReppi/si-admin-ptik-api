@@ -101,6 +101,33 @@ class StudentRepository implements StudentRepositoryInterface
         });
     }
 
+    public function getByUserId(string $userId, array $relations = []): Student
+    {
+        $cacheKey = "student_user_{$userId}";
+
+        $cacheKeys = Cache::get('students_cache_keys', []);
+        if (!in_array($cacheKey, $cacheKeys)) {
+            $cacheKeys[] = $cacheKey;
+            Cache::put('students_cache_keys', $cacheKeys, 3600);
+        }
+
+        return Cache::remember($cacheKey, 3600, function () use ($userId, $relations) {
+            $query = Student::query();
+
+            if (!empty($relations)) {
+                $query->with($relations);
+            }
+
+            $student = $query->where('user_id', $userId)->first();
+
+            if (!$student) {
+                throw new ResourceNotFoundException("Student data not found");
+            }
+
+            return $student;
+        });
+    }
+
     public function store(array $data): Student
     {
         try {
@@ -210,5 +237,12 @@ class StudentRepository implements StudentRepositoryInterface
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+    }
+
+    public function countStudents(): int
+    {
+        return Cache::remember('students_count', 3600, function () {
+            return Student::count();
+        });
     }
 }
