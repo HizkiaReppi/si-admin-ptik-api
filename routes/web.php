@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\External\TeachingHistoryController;
 use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
@@ -51,6 +52,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         })->middleware(CacheResponse::class)->name('api.user');
+
+        Route::get('/dashboard', [DashboardController::class, 'index']);
 
         // Lecturers
         Route::apiResource('/lecturers', LecturerController::class)->names('api.lecturers')->except(['index', 'show']);
