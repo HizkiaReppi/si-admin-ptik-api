@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Interfaces\DashboardRepositoryInterface;
 use App\Models\Category;
 use App\Models\HeadOfDepartment;
 use App\Models\Lecturer;
@@ -16,6 +17,7 @@ use App\Observers\LecturerObserver;
 use App\Observers\ResearchFieldObserver;
 use App\Observers\StudentObserver;
 use App\Observers\SubmissionObserver;
+use App\Repositories\DashboardRepository;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
     }
 
     /**

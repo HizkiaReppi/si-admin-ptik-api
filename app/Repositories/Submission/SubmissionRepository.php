@@ -262,4 +262,46 @@ class SubmissionRepository
             return $query->paginate($perPage);
         });
     }
+
+    public function getAllByStatus(?string $status, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    {
+        $cacheKey = "submission_status_{$status}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
+
+        $cacheKeys = Cache::get('submissions_cache_keys', []);
+        $cacheKeys[] = $cacheKey;
+        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 3600);
+
+        return Cache::remember($cacheKey, 3600, function () use ($status, $filters, $perPage) {
+            $query = Submission::query();
+
+            $query->with(['student', 'student.user', 'files', 'category']);
+
+            if($status !== null) {
+                $query->where('status', $status);
+            }
+
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
+
+                $query->whereHas('student', function ($query) use ($searchTerm) {
+                    $query->whereHas('user', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%");
+                    });
+                });
+            }
+
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                if ($sortBy === 'status') {
+                    $query->orderBy('status', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            }
+
+            return $query->paginate($perPage);
+        });
+    }
 }

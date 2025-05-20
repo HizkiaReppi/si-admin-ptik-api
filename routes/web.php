@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\External\TeachingHistoryController;
 use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
@@ -52,6 +53,8 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         })->middleware(CacheResponse::class)->name('api.user');
 
+        Route::get('/dashboard', [DashboardController::class, 'index']);
+
         // Lecturers
         Route::apiResource('/lecturers', LecturerController::class)->names('api.lecturers')->except(['index', 'show']);
         
@@ -77,6 +80,7 @@ Route::prefix('v1')->group(function () {
 
         // Submissions
         Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'store', 'show', 'update', 'destroy']);
+        Route::get('/submissions', [SubmissionController::class, 'getAllByStatus'])->middleware(CacheResponse::class)->name('api.submissions.getAllByStatus');
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
         Route::put('/submissions/{category}/{submission}/status', [SubmissionController::class, 'updateStatus'])->name('api.submissions.update-status');

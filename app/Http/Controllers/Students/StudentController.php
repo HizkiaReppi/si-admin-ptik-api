@@ -77,7 +77,9 @@ class StudentController extends Controller
             $student = $this->studentService->getById($student->id, [
                 'user',
                 'firstSupervisor',
+                'firstSupervisor.user',
                 'secondSupervisor',
+                'secondSupervisor.user',
                 'information',
                 'addresses',
                 'parents'

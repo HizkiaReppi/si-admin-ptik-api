@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Students\StudentAddress;
 use App\Models\Students\StudentInformation;
 use App\Models\Students\StudentParent;
+use App\Models\Submission\Submission;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -86,6 +87,16 @@ class Student extends Model
     public function parents(): HasOne
     {
         return $this->hasOne(StudentParent::class);
+    }
+
+    /**
+     * Get the student submissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(Submission::class);
     }
 
     protected function fullname(): Attribute

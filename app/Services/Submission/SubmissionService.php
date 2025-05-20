@@ -151,4 +151,9 @@ class SubmissionService
     {
         return $this->repository->getAllByUserId($userId, $filters, $perPage);
     }
+
+    public function getAllByStatus(?string $status, array $filters = [], int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->repository->getAllByStatus($status, $filters, $perPage);
+    }
 }
