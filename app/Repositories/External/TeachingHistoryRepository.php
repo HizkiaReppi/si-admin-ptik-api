@@ -28,7 +28,7 @@ class TeachingHistoryRepository
     {
         $cacheKey = "teaching_history_{$lecturerId}";
         return Cache::remember($cacheKey, now()->addMinutes(40320), function () use ($lecturerId) {
-            $url = "https://api-pddikti.ridwaanhall.me/dosen/teaching-history/{$lecturerId}/";
+            $url = "https://api-pddikti.vercel.app/dosen/teaching-history/{$lecturerId}/";
             try {
                 $response = $this->client->request('GET', $url, [
                     'headers' => [
