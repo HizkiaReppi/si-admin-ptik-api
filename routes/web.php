@@ -41,7 +41,12 @@ Route::prefix('v1')->group(function () {
     
     Route::get('/lecturers', [LecturerController::class, 'index'])->middleware(CacheResponse::class)->name('api.lecturers.index');
     Route::get('/lecturers/{lecturer}', [LecturerController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.show');
-    
+    Route::get('/lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.educations.show');
+    Route::get('/lecturers/{lecturer_id}/experiences/details', [LecturerExperienceController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.experiences.show');
+    Route::get('/lecturers/{lecturer_id}/research-fields/details', [LecturerResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.research-fields.show');
+    Route::get('/lecturers/{lecturer_id}/external-profiles/details', [LecturerProfileController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.external-profiles.show');
+    Route::get('/external/teaching-history/{lecturerId}', [TeachingHistoryController::class, 'getTeachingHistory'])->middleware(CacheResponse::class)->name('api.external.teaching-history');
+
     Route::get('/students', [StudentController::class, 'index'])->middleware(CacheResponse::class)->name('api.students.index');
     Route::get('/students/{student}', [StudentController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.show');
     
@@ -87,22 +92,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/submissions/{category}/{submission}/generate-document', [SubmissionController::class, 'generateDocument'])->name('api.submissions.generate-document');
     
         // Lecturer Educations
-        Route::get('/lecturers/{lecturer_id}/educations/details', [LecturerEducationController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.educations.show');
         Route::put('/lecturers/{lecturer_id}/educations/update', [LecturerEducationController::class, 'update'])->name('api.lecturers.educations.update');
         Route::delete('/lecturers/{lecturer_id}/educations/{education_id}', [LecturerEducationController::class, 'destroy'])->name('api.lecturers.educations.destroy');
 
         // Lecturer Experiences
-        Route::get('/lecturers/{lecturer_id}/experiences/details', [LecturerExperienceController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.experiences.show');
         Route::put('/lecturers/{lecturer_id}/experiences/update', [LecturerExperienceController::class, 'update'])->name('api.lecturers.experiences.update');
         Route::delete('/lecturers/{lecturer_id}/experiences/{experience_id}', [LecturerExperienceController::class, 'destroy'])->name('api.lecturers.experiences.destroy');
 
         // Lecturer Research Fields
-        Route::get('/lecturers/{lecturer_id}/research-fields/details', [LecturerResearchFieldController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.research-fields.show');
         Route::put('/lecturers/{lecturer_id}/research-fields/update', [LecturerResearchFieldController::class, 'update'])->name('api.lecturers.research-fields.update');
         Route::delete('/lecturers/{lecturer_id}/research-fields/{experience_id}', [LecturerResearchFieldController::class, 'destroy'])->name('api.lecturers.research-fields.destroy');
 
         // Lecturer External Profile
-        Route::get('/lecturers/{lecturer_id}/external-profiles/details', [LecturerProfileController::class, 'show'])->middleware(CacheResponse::class)->name('api.lecturers.external-profiles.show');
         Route::put('/lecturers/{lecturer_id}/external-profiles/update', [LecturerProfileController::class, 'update'])->name('api.lecturers.external-profiles.update');
         Route::delete('/lecturers/{lecturer_id}/external-profiles/{profile_id}', [LecturerProfileController::class, 'destroy'])->name('api.lecturers.external-profiles.destroy');
 
@@ -120,9 +121,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/students/{student_id}/parents/details', [StudentParentsController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.parents.show');
         Route::put('/students/{student_id}/parents/update', [StudentParentsController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.parents.update');
         Route::delete('/students/{student_id}/parents/{student_parents_id}', [StudentParentsController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.parents.destroy');
-
-        // External API
-        Route::get('/external/teaching-history/{lecturerId}', [TeachingHistoryController::class, 'getTeachingHistory'])->middleware(CacheResponse::class)->name('api.external.teaching-history');
     });
 
     require __DIR__.'/auth.php';
