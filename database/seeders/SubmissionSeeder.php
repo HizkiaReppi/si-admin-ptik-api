@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Exam;
 use App\Models\Lecturer;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionFile;
@@ -9,6 +10,7 @@ use App\Models\Submission\SubmissionExaminer;
 use App\Models\Submission\SubmissionSupervisor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class SubmissionSeeder extends Seeder
 {
@@ -104,6 +106,16 @@ class SubmissionSeeder extends Seeder
                         $existingSupervisors[] = $supervisor->supervisor_id;
                     });
                 }
+            }
+
+            if ($submission->status === 'completed') {
+                Exam::insert([
+                    'id' => Str::uuid(),
+                    'submission_id' => $submission->id,
+                    'exam_date' => now()->addDays(7),
+                    'exam_time' => now()->addHours(2),
+                    'exam_place' => 'Ruang Ujian',
+                ]);
             }
         });
     }

@@ -16,6 +16,7 @@ use App\Http\Controllers\Students\StudentInformationController;
 use App\Http\Controllers\Students\StudentAddressController;
 use App\Http\Controllers\Students\StudentParentsController;
 use App\Http\Controllers\Submission\CategoryController;
+use App\Http\Controllers\Exams\ProposalSeminarController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\ResponseCache\Middlewares\CacheResponse;
@@ -121,6 +122,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/students/{student_id}/parents/details', [StudentParentsController::class, 'show'])->middleware(CacheResponse::class)->name('api.students.parents.show');
         Route::put('/students/{student_id}/parents/update', [StudentParentsController::class, 'update'])->middleware(CacheResponse::class)->name('api.students.parents.update');
         Route::delete('/students/{student_id}/parents/{student_parents_id}', [StudentParentsController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.parents.destroy');
+
+        // Exams
+        Route::get('/exams/proposal-seminar', [ProposalSeminarController::class, 'index'])->middleware(CacheResponse::class)->name('api.exams.proposal-seminar.index');
     });
 
     require __DIR__.'/auth.php';
