@@ -2,10 +2,12 @@
 
 namespace App\Repositories\Exams;
 
+use App\Exceptions\ResourceNotFoundException;
 use App\Models\Exam;
 use App\Models\Submission\Submission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ProposalSeminarRepository
 {
@@ -26,15 +28,7 @@ class ProposalSeminarRepository
                 });
             });
 
-            $query->with([
-                'submission', 
-                'submission.category', 
-                'submission.student', 
-                'submission.student.user', 
-                'submission.examiners', 
-                'submission.examiners.examiner',
-                'submission.examiners.examiner.user'
-            ]);
+            $query->with(['submission', 'submission.category', 'submission.student', 'submission.student.user', 'submission.examiners', 'submission.examiners.examiner', 'submission.examiners.examiner.user']);
 
             if (!empty($filters['search'])) {
                 $searchTerm = $filters['search'];
@@ -61,6 +55,45 @@ class ProposalSeminarRepository
 
             return $query->paginate($perPage);
         });
+    }
+
+    public function create(string $submissionId): Exam
+    {
+        try {
+            return Exam::create([
+                'submission_id' => $submissionId,
+                'exam_date' => null,
+                'exam_time' => null,
+                'exam_place' => null,
+            ]);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function update(string $submissionId, array $data): ?Exam
+    {
+        DB::beginTransaction();
+        try {
+            $exam = Exam::where('submission_id', $submissionId)->first();
+
+            if (!$exam) {
+                throw new ResourceNotFoundException('Exam data not found');
+            }
+
+            $exam->update([
+                'exam_date' => $data['exam_date'] ?? $exam->exam_date,
+                'exam_time' => $data['exam_time'] ?? $exam->exam_time,
+                'exam_place' => $data['exam_place'] ?? $exam->exam_place,
+            ]);
+
+            DB::commit();
+
+            return $exam;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception($e->getMessage());
+        }
     }
 
     /**

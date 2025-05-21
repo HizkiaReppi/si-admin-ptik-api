@@ -2,14 +2,14 @@
 
 namespace App\Services\Exams;
 
+use App\Exceptions\ResourceNotFoundException;
+use App\Models\Exam;
 use App\Repositories\Exams\ProposalSeminarRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProposalSeminarService
 {
-    public function __construct(
-        protected ProposalSeminarRepository $repository
-    ) { }
+    public function __construct(protected ProposalSeminarRepository $repository) {}
 
     /**
      * Get paginated list of lecturers with optional filters and relations.
@@ -33,5 +33,25 @@ class ProposalSeminarService
         }
 
         return $this->repository->getAll($filters, $perPage);
+    }
+
+    public function create(string $submissionId): Exam
+    {
+        try {
+            return $this->repository->create($submissionId);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function update(string $submissionId, array $data): ?Exam
+    {
+        try {
+            return $this->repository->update($submissionId, $data);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }

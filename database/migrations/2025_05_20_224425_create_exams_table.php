@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('submission_id')->constrained('submissions')->onDelete('cascade');
-            $table->date('exam_date');
-            $table->time('exam_time');
-            $table->string('exam_place');
+            $table->date('exam_date')->nullable();
+            $table->time('exam_time')->nullable();
+            $table->string('exam_place')->nullable();
             $table->timestamps();
         });
     }

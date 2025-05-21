@@ -125,6 +125,8 @@ Route::prefix('v1')->group(function () {
 
         // Exams
         Route::get('/exams/proposal-seminar', [ProposalSeminarController::class, 'index'])->middleware(CacheResponse::class)->name('api.exams.proposal-seminar.index');
+        Route::post('/exams/proposal-seminar/{submission}', [ProposalSeminarController::class, 'store'])->name('api.exams.proposal-seminar.store');
+        Route::put('/exams/proposal-seminar/{submission}', [ProposalSeminarController::class, 'update'])->name('api.exams.proposal-seminar.update');
     });
 
     require __DIR__.'/auth.php';

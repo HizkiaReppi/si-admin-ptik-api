@@ -36,11 +36,17 @@ class Exam extends Model
 
     public function getExamDateAttribute($value)
     {
+        if (is_null($value)) {
+            return null;
+        }
         return \Carbon\Carbon::parse($value)->translatedFormat('l, d F Y');
     }
 
     public function getExamTimeAttribute($value)
     {
+        if (is_null($value)) {
+            return null;
+        }
         return \Carbon\Carbon::parse($value)->translatedFormat('H:i');
     }
 
