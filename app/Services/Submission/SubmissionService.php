@@ -4,6 +4,7 @@ namespace App\Services\Submission;
 
 use App\Repositories\Submission\SubmissionRepository;
 use App\Models\Submission\Submission;
+use App\Repositories\Exams\ProposalSeminarRepository;
 use App\Repositories\Submission\CategoryRepository;
 use App\Services\Students\StudentService;
 use Exception;
@@ -17,6 +18,7 @@ class SubmissionService
     public function __construct(
         protected SubmissionRepository $repository,
         protected CategoryRepository $categoryRepository,
+        protected ProposalSeminarRepository $proposalSeminarRepository,
         protected SubmissionFileService $fileService,
         protected StudentService $studentService,
     ) {}
@@ -95,6 +97,10 @@ class SubmissionService
             // Add supervisors if provided
             if ($supervisors && $status === 'faculty_review' && $categorySlug === 'permohonan-sk-pembimbing-skripsi') {
                 $this->repository->addSupervisors($submission, $supervisors);
+            }
+
+            if ($status === 'completed' && $categorySlug === 'sk-seminar-proposal') {
+                $this->proposalSeminarRepository->create($submission->id);
             }
 
             DB::commit();
