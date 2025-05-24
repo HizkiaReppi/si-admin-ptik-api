@@ -146,8 +146,7 @@ class SubmissionController extends Controller
         $thesisTitle = $submission->files->where('requirement.name', 'Judul Skripsi')->first()?->file_path ?? '-';
         
         switch ($category->slug) {
-            case 'seminar-proposal':
-
+            case 'sk-seminar-proposal':
                 $data = [
                     'documentNumber' => $submission->document_number,
                     'studentName' => $submission->student->user->name,
