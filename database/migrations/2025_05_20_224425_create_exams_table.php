@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('exam_date')->nullable();
             $table->time('exam_time')->nullable();
             $table->string('exam_place')->nullable();
+            $table->string('submission_result_doc_num')->nullable();
             $table->timestamps();
         });
     }

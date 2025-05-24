@@ -4,6 +4,7 @@ namespace App\Repositories\Submission;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Category;
+use App\Models\Document;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionExaminer;
 use App\Models\Submission\SubmissionFile;
@@ -76,7 +77,7 @@ class SubmissionRepository
                 $query->where('slug', $categorySlug);
             });
 
-            $query->with(['student', 'student.user', 'student.firstSupervisor', 'student.firstSupervisor.user', 'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'files.requirement', 'category', 'examiners.examiner', 'examiners.examiner.user', 'supervisors.supervisor', 'supervisors.supervisor.user']);
+            $query->with(['student', 'student.user', 'student.firstSupervisor', 'student.firstSupervisor.user', 'student.secondSupervisor', 'student.secondSupervisor.user', 'files', 'files.requirement', 'category', 'examiners.examiner', 'examiners.examiner.user', 'supervisors.supervisor', 'supervisors.supervisor.user', 'document']);
 
             $submission = $query->find($id);
 
@@ -165,19 +166,20 @@ class SubmissionRepository
     {
         $currentYear = date('Y');
 
-        $lastSubmission = Submission::where('document_number', 'LIKE', "%/{$currentYear}")
+        $lastDocument = Document::where('document_number', 'LIKE', "%/{$currentYear}")
             ->orderBy('document_number', 'desc')
             ->first();
 
-        if (!$lastSubmission) {
+        if (!$lastDocument) {
             return '0001';
         }
 
-        preg_match('/^(\d+)/', $lastSubmission->document_number, $matches);
+        preg_match('/^(\d+)/', $lastDocument->document_number, $matches);
         $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
 
         return str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
     }
+
 
     public function store(string $categorySlug, string $studentId, array $files): Submission
     {

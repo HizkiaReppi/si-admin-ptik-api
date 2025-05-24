@@ -42,6 +42,13 @@ class SubmissionSeeder extends Seeder
                 }
             }
 
+            if ($submission->status === 'faculty_review' || $submission->status === 'completed') {
+                $submission->document()->create([
+                    'document_number' => fake()->regexify('SK/\d{8}/[a-zA-Z0-9]{5}'),
+                    'document_date' => fake()->dateTimeBetween($submission->created_at, 'now'),
+                ]);
+            }
+
             $firstSupervisorId = $submission->student->firstSupervisor->id ?? null;
 
             if ($submission->category->slug === 'sk-seminar-proposal' && $firstSupervisorId) {
