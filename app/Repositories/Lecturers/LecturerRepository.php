@@ -57,7 +57,21 @@ class LecturerRepository implements LecturerRepositoryInterface
                     $query->orderBy($sortBy, $sortOrder);
                 }
             } else {
-                $query->orderBy('users.name', 'asc');
+                $query->orderByRaw("
+                    CASE
+                        WHEN LOWER(lecturers.front_degree) LIKE '%prof.%' THEN 2
+                        WHEN LOWER(lecturers.front_degree) LIKE '%dr.%' THEN 1
+                        ELSE 0
+                    END DESC
+                ")->orderByRaw("
+                    CASE
+                        WHEN LOWER(lecturers.back_degree) LIKE '%ph.d.%' THEN 3
+                        WHEN LOWER(lecturers.back_degree) LIKE '%dr.%' THEN 2
+                        WHEN LOWER(lecturers.back_degree) LIKE '%m.%' THEN 1
+                        WHEN LOWER(lecturers.back_degree) LIKE '%s.%' THEN 0
+                        ELSE -1
+                    END DESC
+                ")->orderBy('users.name', 'asc');
             }
 
             return $query->paginate($perPage);

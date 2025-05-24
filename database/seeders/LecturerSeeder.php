@@ -26,6 +26,41 @@ class LecturerSeeder extends Seeder
             $nidn = LecturerHelper::generateNIDN();
             $name = Factory::create()->firstName($gender == 1 ? 'male' : 'female') . ' ' . Factory::create()->lastName($gender == 1 ? 'male' : 'female');
 
+            $degrees = ['S1', 'S2'];
+            $hasS3 = rand(0, 1) === 1;
+            if ($hasS3) {
+                $degrees[] = 'S3';
+            }
+
+            $frontDegrees = [];
+            $backDegrees = [];
+
+            if ($hasS3) {
+                if (rand(0, 4) === 0) {
+                    $frontDegrees[] = 'Prof.';
+                }
+                $frontDegrees[] = 'Dr.';
+                $backDegrees[] = 'Ph.D.';
+            } else {
+                if (rand(0, 1)) {
+                    $frontDegrees[] = 'Dr.';
+                }
+            }
+
+            $s2Degrees = ['M.T.', 'M.Kom.', 'M.Si.', 'M.Pd.', 'M.Cs', 'M.Sc.'];
+            $s1Degrees = ['S.T.', 'S.Kom.', 'S.Si.', 'S.Pd.'];
+
+            if (in_array('S2', $degrees)) {
+                $backDegrees[] = fake()->randomElement($s2Degrees);
+            }
+
+            if (in_array('S1', $degrees)) {
+                $backDegrees[] = fake()->randomElement($s1Degrees);
+            }
+
+            $frontDegreeStr = implode(' ', array_unique($frontDegrees));
+            $backDegreeStr = implode(', ', array_unique($backDegrees));
+
             $user = User::create([
                 'name' => $name,
                 'username' => $nidn,
@@ -40,18 +75,12 @@ class LecturerSeeder extends Seeder
                 'nip' => $nip,
                 'nidn' => $nidn,
                 'phone_number' => '08' . sprintf('%09d', $i),
+                'front_degree' => $frontDegreeStr,
+                'back_degree' => $backDegreeStr,
             ]);
 
-            // Assign 1-5 random research fields
-            $lecturer->researchFields()->attach(
-                ResearchField::inRandomOrder()->take(rand(1, 5))->pluck('id')
-            );
+            $lecturer->researchFields()->attach(ResearchField::inRandomOrder()->take(rand(1, 5))->pluck('id'));
 
-            // Assign S1, S2 (some with S3) educations
-            $degrees = ['S1', 'S2'];
-            if (rand(0, 1)) {
-                $degrees[] = 'S3';
-            }
             foreach ($degrees as $degree) {
                 Education::factory()->create([
                     'lecturer_id' => $lecturer->id,
@@ -59,7 +88,6 @@ class LecturerSeeder extends Seeder
                 ]);
             }
 
-            // Assign 2-3 experiences
             Experience::factory(rand(2, 3))->create(['lecturer_id' => $lecturer->id]);
         }
     }
