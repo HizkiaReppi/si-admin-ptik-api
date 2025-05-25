@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Exams\ExamsController;
 use App\Http\Controllers\External\TeachingHistoryController;
 use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\Students\StudentInformationController;
 use App\Http\Controllers\Students\StudentAddressController;
 use App\Http\Controllers\Students\StudentParentsController;
 use App\Http\Controllers\Submission\CategoryController;
-use App\Http\Controllers\Exams\ProposalSeminarController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\ResponseCache\Middlewares\CacheResponse;
@@ -124,9 +124,9 @@ Route::prefix('v1')->group(function () {
         Route::delete('/students/{student_id}/parents/{student_parents_id}', [StudentParentsController::class, 'destroy'])->middleware(CacheResponse::class)->name('api.students.parents.destroy');
 
         // Exams
-        Route::get('/exams/proposal-seminar', [ProposalSeminarController::class, 'index'])->middleware(CacheResponse::class)->name('api.exams.proposal-seminar.index');
-        Route::post('/exams/proposal-seminar/{submission}', [ProposalSeminarController::class, 'store'])->name('api.exams.proposal-seminar.store');
-        Route::put('/exams/proposal-seminar/{submission}', [ProposalSeminarController::class, 'update'])->name('api.exams.proposal-seminar.update');
+        Route::get('/exams/{category}', [ExamsController::class, 'index'])->middleware(CacheResponse::class)->name('api.exams.index');
+        Route::post('/exams/{category}/{submission}', [ExamsController::class, 'store'])->name('api.exams.store');
+        Route::put('/exams/{category}/{submission}', [ExamsController::class, 'update'])->name('api.exams.update');
     });
 
     require __DIR__.'/auth.php';

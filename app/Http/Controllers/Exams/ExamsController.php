@@ -6,19 +6,24 @@ use App\Classes\ApiResponseClass;
 use App\Exceptions\ResourceNotFoundException;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Submission\Submission;
-use App\Services\Exams\ProposalSeminarService;
+use App\Services\Exams\ExamsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ProposalSeminarController extends Controller
+class ExamsController extends Controller
 {
-    public function __construct(protected ProposalSeminarService $service, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
+    public function __construct(
+        protected ExamsService $service, 
+        protected ApiResponseHelper $apiResponseHelper, 
+        protected ApiResponseClass $apiResponseClass
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Category $category, Request $request): JsonResponse
     {
         $search = $request->only('search');
         $perPage = $request->input('per_page', 10);
@@ -31,12 +36,12 @@ class ProposalSeminarController extends Controller
             'order' => $order,
         ];
 
-        $exams = $this->service->getAll($filters, (int) $perPage);
+        $exams = $this->service->getAll($category->slug, $filters, (int) $perPage);
 
         $pagination = $this->apiResponseHelper->generatePagination($exams);
         $exams = $exams->items();
 
-        return $this->apiResponseClass->sendResponseWithPagination(200, 'Proposal Seminar retrieved successfully', $exams, $pagination);
+        return $this->apiResponseClass->sendResponseWithPagination(200, 'Exams retrieved successfully', $exams, $pagination);
     }
 
     /**
@@ -46,7 +51,7 @@ class ProposalSeminarController extends Controller
     {
         try {
             $exam = $this->service->create($submission->id);
-            return $this->apiResponseClass->sendResponse(201, 'Proposal Seminar created successfully', $exam->toArray());
+            return $this->apiResponseClass->sendResponse(201, 'Exams created successfully', $exam->toArray());
         } catch (\Exception $e) {
             return $this->apiResponseClass->sendError(500, 'An error occurred. Please try again later.', [$e->getMessage()]);
         }
@@ -66,7 +71,7 @@ class ProposalSeminarController extends Controller
 
             $exam = $this->service->update($submission->id, $validatedData);
 
-            return $this->apiResponseClass->sendResponse(200, 'Proposal Seminar updated successfully', $exam->toArray());
+            return $this->apiResponseClass->sendResponse(200, 'Exams updated successfully', $exam->toArray());
         } catch (ResourceNotFoundException $e) {
             return $this->apiResponseClass->sendError($e->getCode(), $e->getMessage());
         } catch (\Exception $e) {

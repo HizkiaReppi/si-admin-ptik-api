@@ -4,12 +4,12 @@ namespace App\Services\Exams;
 
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Exam;
-use App\Repositories\Exams\ProposalSeminarRepository;
+use App\Repositories\Exams\ExamsRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class ProposalSeminarService
+class ExamsService
 {
-    public function __construct(protected ProposalSeminarRepository $repository) {}
+    public function __construct(protected ExamsRepository $repository) {}
 
     /**
      * Get paginated list of lecturers with optional filters and relations.
@@ -18,7 +18,7 @@ class ProposalSeminarService
      * @param int|null $perPage
      * @return LengthAwarePaginator
      */
-    public function getAll(array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    public function getAll(string $slug, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
         if (!empty($filters['search'])) {
             $filters['search'] = preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', strtolower(trim($filters['search'])));
@@ -32,7 +32,7 @@ class ProposalSeminarService
             $filters['order'] = 'asc';
         }
 
-        return $this->repository->getAll($filters, $perPage);
+        return $this->repository->getAll($slug, $filters, $perPage);
     }
 
     public function create(string $submissionId): Exam

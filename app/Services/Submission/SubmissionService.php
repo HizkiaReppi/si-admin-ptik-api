@@ -4,7 +4,7 @@ namespace App\Services\Submission;
 
 use App\Repositories\Submission\SubmissionRepository;
 use App\Models\Submission\Submission;
-use App\Repositories\Exams\ProposalSeminarRepository;
+use App\Repositories\Exams\ExamsRepository;
 use App\Repositories\Submission\CategoryRepository;
 use App\Services\Students\StudentService;
 use Exception;
@@ -18,7 +18,7 @@ class SubmissionService
     public function __construct(
         protected SubmissionRepository $repository,
         protected CategoryRepository $categoryRepository,
-        protected ProposalSeminarRepository $proposalSeminarRepository,
+        protected ExamsRepository $examsRepository,
         protected SubmissionFileService $fileService,
         protected StudentService $studentService,
     ) {}
@@ -100,7 +100,7 @@ class SubmissionService
             }
 
             if ($status === 'completed' && $categorySlug === 'sk-seminar-proposal') {
-                $this->proposalSeminarRepository->create($submission->id);
+                $this->examsRepository->create($submission->id);
             }
 
             DB::commit();

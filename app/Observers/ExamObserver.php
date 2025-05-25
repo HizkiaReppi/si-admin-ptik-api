@@ -53,13 +53,13 @@ class ExamObserver
      */
     private function clearCache(Exam $exam): void
     {
-        $cacheKeys = Cache::get('proposal_seminar_cache_keys', []);
+        $cacheKeys = Cache::get('exams_cache_keys', []);
 
         foreach ($cacheKeys as $key) {
             Cache::forget($key);
         }
 
-        Cache::forget('proposal_seminar_cache_keys');
+        Cache::forget('exams_cache_keys');
 
         ResponseCache::clear();
     }

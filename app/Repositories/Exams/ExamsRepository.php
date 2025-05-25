@@ -9,22 +9,22 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class ProposalSeminarRepository
+class ExamsRepository
 {
-    public function getAll(array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    public function getAll(string $slug, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
     {
-        $cacheKey = "proposal_seminar_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
+        $cacheKey = "{$slug}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
 
-        $cacheKeys = Cache::get('proposal_seminar_cache_keys', []);
+        $cacheKeys = Cache::get("exams_cache_keys", []);
         $cacheKeys[] = $cacheKey;
-        Cache::put('proposal_seminar_cache_keys', array_unique($cacheKeys), 3600);
+        Cache::put("exams_cache_keys", array_unique($cacheKeys), 3600);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters, $perPage) {
+        return Cache::remember($cacheKey, 3600, function () use ($slug, $filters, $perPage) {
             $query = Exam::query();
 
-            $query->whereHas('submission', function ($query) {
-                $query->whereHas('category', function ($query) {
-                    $query->where('slug', 'sk-seminar-proposal');
+            $query->whereHas('submission', function ($query) use ($slug) {
+                $query->whereHas('category', function ($query) use ($slug) {
+                    $query->where('slug', $slug);
                 });
             });
 
