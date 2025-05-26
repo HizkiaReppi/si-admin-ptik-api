@@ -4,11 +4,13 @@ namespace App\Models\Submission;
 
 use App\Models\Student;
 use App\Models\Category;
+use App\Models\Document;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Submission extends Model
 {
@@ -21,9 +23,13 @@ class Submission extends Model
      * @var string[]
      */
     protected $fillable = [
-        'category_id', 'student_id', 'status', 'reviewer_name', 'document_number',
-        'document_date', 'generated_file_path', 'rejection_reason',
+        'category_id', 'student_id', 'status', 'reviewer_name', 'generated_file_path', 'rejection_reason',
     ];
+
+    public function document(): MorphOne
+    {
+        return $this->morphOne(Document::class, 'documentable');
+    }
 
     public function files(): HasMany
     {

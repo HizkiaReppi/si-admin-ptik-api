@@ -146,10 +146,9 @@ class SubmissionController extends Controller
         $thesisTitle = $submission->files->where('requirement.name', 'Judul Skripsi')->first()?->file_path ?? '-';
         
         switch ($category->slug) {
-            case 'seminar-proposal':
-
+            case 'sk-seminar-proposal':
                 $data = [
-                    'documentNumber' => $submission->document_number,
+                    'documentNumber' => $submission->document->document_number,
                     'studentName' => $submission->student->user->name,
                     'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
                     'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
@@ -158,7 +157,7 @@ class SubmissionController extends Controller
                     'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
                     'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
                     'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
-                    'documentDate' => $submission->document_date,
+                    'documentDate' => $submission->document->document_date,
                     'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
                     'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
                 ];
@@ -169,7 +168,7 @@ class SubmissionController extends Controller
                 break;
             case 'sk-ujian-hasil-penelitian':
                 $data = [
-                    'documentNumber' => $submission->document_number,
+                    'documentNumber' => $submission->document->document_number,
                     'studentName' => $submission->student->user->name,
                     'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
                     'studentSemester' => $submission->student->entry_year ? +$studentHelper->getCurrentSemesterStudent($submission->student->entry_year) : '-',
@@ -179,7 +178,7 @@ class SubmissionController extends Controller
                     'examiner1' => $submission->examiners[0]->examiner->full_name ?? '-',
                     'examiner2' => $submission->examiners[1]->examiner->full_name ?? '-',
                     'examiner3' => $submission->examiners[2]->examiner->full_name ?? '-',
-                    'documentDate' => $submission->document_date,
+                    'documentDate' => $submission->document->document_date,
                     'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
                     'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
                 ];
@@ -189,7 +188,7 @@ class SubmissionController extends Controller
             case 'permohonan-ujian-komprehensif':
                 $missingFields = [];
 
-                if (!$submission->document_number) $missingFields[] = 'Nomor Dokumen';
+                if (!$submission->document->document_number) $missingFields[] = 'Nomor Dokumen';
                 if (!$submission->student->user->name) $missingFields[] = 'Nama Mahasiswa';
                 if ($submission->student->information->place_of_birth == null) $missingFields[] = 'Tempat Lahir';
                 if ($submission->student->information->date_of_birth == null) $missingFields[] = 'Tanggal Lahir';
@@ -206,7 +205,7 @@ class SubmissionController extends Controller
                     }
                 }
 
-                if (!$submission->document_date) $missingFields[] = 'Tanggal Dokumen';
+                if (!$submission->document->document_date) $missingFields[] = 'Tanggal Dokumen';
                 if (!$headOfDepartment?->lecturer->full_name) $missingFields[] = 'Nama Ketua Jurusan';
                 if (!$headOfDepartment?->lecturer->nip) $missingFields[] = 'NIP Ketua Jurusan';
 
@@ -217,7 +216,7 @@ class SubmissionController extends Controller
                 }
 
                 $data = [
-                    'documentNumber' => $submission->document_number,
+                    'documentNumber' => $submission->document->document_number,
                     'studentName' => $submission->student->user->name,
                     'studentPlaceDateOfBirth' => $submission->student->information->place_of_birth . ', ' . \Carbon\Carbon::parse($submission->student->information->date_of_birth)->translatedFormat('d F Y'),
                     'studentNim' => $textFormattingHelper->formatNIM($submission->student->nim),
@@ -231,7 +230,7 @@ class SubmissionController extends Controller
                     'examiner3' => $submission->examiners[2]->examiner->full_name,
                     'examiner4' => $submission->examiners[3]->examiner->full_name,
                     'examiner5' => $submission->examiners[4]->examiner->full_name,
-                    'documentDate' => $submission->document_date,
+                    'documentDate' => $submission->document->document_date,
                     'headOfDepartmentName' => $headOfDepartment->lecturer->full_name,
                     'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment->lecturer->nip),
                 ];
