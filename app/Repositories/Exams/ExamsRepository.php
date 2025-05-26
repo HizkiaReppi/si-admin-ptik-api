@@ -123,4 +123,30 @@ class ExamsRepository
 
         return str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
     }
+
+    public function getBySubmissionId(string $submissionId): ?Exam
+    {
+        return Exam::where('submission_id', $submissionId)->first();
+    }
+
+    public function delete(string $submissionId): ?Exam
+    {
+        DB::beginTransaction();
+        try {
+            $exam = Exam::where('submission_id', $submissionId)->first();
+
+            if($exam) {
+                $exam->delete();
+                
+                DB::commit();
+                
+                return $exam;
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

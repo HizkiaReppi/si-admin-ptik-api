@@ -47,7 +47,7 @@ class ExamsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Submission $submission, Request $request): JsonResponse
+    public function store(Category $category, Submission $submission, Request $request): JsonResponse
     {
         try {
             $exam = $this->service->create($submission->id);
@@ -60,7 +60,7 @@ class ExamsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Submission $submission, Request $request): JsonResponse
+    public function update(Category $category, Submission $submission, Request $request): JsonResponse
     {
         try {
             $validatedData = $request->validate([

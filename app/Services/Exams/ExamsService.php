@@ -54,4 +54,15 @@ class ExamsService
             throw new \Exception($e->getMessage());
         }
     }
+
+    public function delete(string $submissionId): ?Exam
+    {
+        try {
+            return $this->repository->delete($submissionId);
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
