@@ -97,16 +97,33 @@ class SubmissionRepository
     /**
      * Update submission status and related fields.
      */
-    public function updateStatus(Submission $submission, string $status, ?string $reviewerName = null, ?string $reason = null, ?string $documentNumber = null, ?string $documentDate = null): Submission
-    {
+    public function updateStatus(
+        Submission $submission,
+        string $status,
+        ?string $reviewerName = null,
+        ?string $reason = null,
+        ?string $documentNumber = null,
+        ?string $documentDate = null
+    ): Submission {
         $submission->update([
             'status' => $status,
             'reviewer_name' => $reviewerName,
             'rejection_reason' => $reason,
-            'document_number' => $documentNumber,
-            'document_date' => $documentDate,
         ]);
-
+    
+        $document = $submission->document;
+    
+        if ($document) {
+            $document->update([
+                'document_date' => $documentDate,
+            ]);
+        } else {
+            $submission->document()->create([
+                'document_number' => $documentNumber,
+                'document_date' => $documentDate,
+            ]);
+        }
+    
         return $submission->refresh();
     }
 
