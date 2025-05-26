@@ -63,6 +63,16 @@ class SubmissionObserver
         Cache::forget('all_submissions_count');
         Cache::forget("submission_{$submission->category->slug}_{$submission->id}");
 
+        if ($submission->status === 'completed') {
+            $examsCacheKeys = Cache::get('exams_cache_keys', []);
+
+            foreach ($examsCacheKeys as $key) {
+                Cache::forget($key);
+            }
+    
+            Cache::forget('exams_cache_keys');
+        }
+
         ResponseCache::clear();
     }
 }

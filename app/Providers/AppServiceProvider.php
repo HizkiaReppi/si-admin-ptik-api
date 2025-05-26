@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Interfaces\DashboardRepositoryInterface;
 use App\Models\Category;
+use App\Models\Document;
 use App\Models\Exam;
 use App\Models\HeadOfDepartment;
 use App\Models\Lecturer;
@@ -13,6 +14,7 @@ use App\Models\Submission\Submission;
 use App\Models\User;
 use App\Observers\AdministratorObserver;
 use App\Observers\CategoryObserver;
+use App\Observers\DocumentObserver;
 use App\Observers\ExamObserver;
 use App\Observers\HeadOfDepartmentObserver;
 use App\Observers\LecturerObserver;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(CategoryObserver::class);
         Submission::observe(SubmissionObserver::class);
         Exam::observe(ExamObserver::class);
+        Document::observe(DocumentObserver::class);
 
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
