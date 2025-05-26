@@ -2,6 +2,7 @@
 
 namespace App\Services\Submission;
 
+use App\Exceptions\ResourceNotFoundException;
 use App\Repositories\Submission\SubmissionRepository;
 use App\Models\Submission\Submission;
 use App\Repositories\Exams\ExamsRepository;
@@ -99,8 +100,14 @@ class SubmissionService
                 $this->repository->addSupervisors($submission, $supervisors);
             }
 
-            if ($status === 'completed' && $categorySlug === 'sk-seminar-proposal') {
+            if ($status === 'completed' && ($categorySlug === 'sk-seminar-proposal' || $categorySlug === 'sk-ujian-hasil-penelitian')) {
                 $this->examsRepository->create($submission->id);
+            }
+
+            if ($status !== 'completed') {
+                try {
+                    $this->examsRepository->delete($submission->id);
+                } catch (ResourceNotFoundException $e) {}
             }
 
             DB::commit();
