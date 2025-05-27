@@ -18,10 +18,31 @@ class RequirementSeeder extends Seeder
 
         foreach ($categories as $category) {
             switch ($category->name) {
+                case 'Surat Aktif Kuliah':
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Slip UKT Terbaru',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Nama Orang Tua',
+                        'type' => 'text',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Pekerjaan Orang Tua',
+                        'type' => 'text',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Keterangan Gaji Orang Tua/Beasiswa',
+                    ]);
+                    break;
+                    
                 case 'SK Seminar Proposal':
                     Requirement::create([
                         'category_id' => $category->id,
-                        'name' => 'Draf Proposal',
+                        'name' => 'Proposal + Lembar Persetujuan',
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
@@ -29,11 +50,7 @@ class RequirementSeeder extends Seeder
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
-                        'name' => 'Slip UKT',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Lembar Persetujuan',
+                        'name' => 'Slip UKT Terbaru',
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
@@ -42,66 +59,6 @@ class RequirementSeeder extends Seeder
                     Requirement::create([
                         'category_id' => $category->id,
                         'name' => 'KRS Semester Berjalan',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Judul Skripsi',
-                        'type' => 'text',
-                    ]);
-                    break;
-
-                case 'SK Ujian Hasil Penelitian':
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Lembar Persetujuan',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Slip UKT',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Transkrip Nilai',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'KRS Semester Berjalan',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Draf Skripsi',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Judul Skripsi',
-                        'type' => 'text',
-                    ]);
-                    break;
-
-                case 'Permohonan Ujian Komprehensif':
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Slip UKT Semester 1 s/d Semester Akhir',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Fotocopy Ijazah Terakhir (Legalisir)',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Bukti Published Jurnal',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Pas Foto 3x4',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Surat Keterangan Bebas Perpustakaan',
-                    ]);
-                    Requirement::create([
-                        'category_id' => $category->id,
-                        'name' => 'Biodata',
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
@@ -119,16 +76,49 @@ class RequirementSeeder extends Seeder
                         'category_id' => $category->id,
                         'name' => 'Slip UKT Terbaru',
                     ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
+                    ]);
                     break;
 
                 case 'Ijin Survey':
                     Requirement::create([
                         'category_id' => $category->id,
-                        'name' => 'SK Pembimbing Akademik 2',
+                        'name' => 'SK Pembimbing 2',
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
                         'name' => 'Slip UKT Terbaru',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
+                    ]);
+                    break;
+
+                case 'SK Ujian Hasil Penelitian':
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Skripsi + Lembar Persetujuan',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Slip UKT Terbaru',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Transkrip Nilai',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'KRS Semester Berjalan',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Kartu Bimbingan Skripsi',
                     ]);
                     Requirement::create([
                         'category_id' => $category->id,
@@ -144,10 +134,31 @@ class RequirementSeeder extends Seeder
                     ]);
                     break;
 
-                case 'Surat Aktif Kuliah':
+                case 'Permohonan Ujian Komprehensif':
                     Requirement::create([
                         'category_id' => $category->id,
-                        'name' => 'Slip UKT Terbaru',
+                        'name' => 'Slip UKT Semester 1 s/d Semester Akhir',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Berita Acara Ujian Hasil',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Pernyataan Jurnal',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Surat Pernyataan Sitasi',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Skripsi Full',
+                    ]);
+                    Requirement::create([
+                        'category_id' => $category->id,
+                        'name' => 'Judul Skripsi',
+                        'type' => 'text',
                     ]);
                     break;
 

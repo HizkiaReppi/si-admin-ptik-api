@@ -20,13 +20,23 @@ class CategorySeeder extends Seeder
                 'docs_file_path' => null,
             ],
             [
+                'name' => 'Permohonan SK Pembimbing Skripsi',
+                'slug' => 'permohonan-sk-pembimbing-skripsi',
+                'docs_file_path' => null,
+            ],
+            [
+                'name' => 'Ijin Survey',
+                'slug' => 'ijin-survey',
+                'docs_file_path' => null,
+            ],
+            [
                 'name' => 'SK Ujian Hasil Penelitian',
                 'slug' => 'sk-ujian-hasil-penelitian',
                 'docs_file_path' => null,
             ],
             [
-                'name' => 'Berita Acara Konversi Nilai MBKM',
-                'slug' => 'berita-acara-konversi-nilai-mbkm',
+                'name' => 'PDPT',
+                'slug' => 'pdpt',
                 'docs_file_path' => null,
             ],
             [
@@ -38,20 +48,10 @@ class CategorySeeder extends Seeder
                 'name' => 'Surat Aktif Kuliah',
                 'slug' => 'surat-aktif-kuliah',
                 'docs_file_path' => null,
-            ],
+            ],         
             [
-                'name' => 'Ijin Survey',
-                'slug' => 'ijin-survey',
-                'docs_file_path' => null,
-            ],
-            [
-                'name' => 'PDPT',
-                'slug' => 'pdpt',
-                'docs_file_path' => null,
-            ],
-            [
-                'name' => 'Permohonan SK Pembimbing Skripsi',
-                'slug' => 'permohonan-sk-pembimbing-skripsi',
+                'name' => 'Berita Acara Konversi Nilai MBKM',
+                'slug' => 'berita-acara-konversi-nilai-mbkm',
                 'docs_file_path' => null,
             ],
         ];

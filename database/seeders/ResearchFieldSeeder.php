@@ -271,5 +271,11 @@ class ResearchFieldSeeder extends Seeder
             'field_name' => 'Class Action Research',
             'description' => 'Penelitian Tindakan Kelas adalah metode penelitian yang digunakan oleh guru untuk meningkatkan praktik pengajaran melalui refleksi dan perbaikan berkelanjutan.',
         ]);
+
+        ResearchField::create([
+            'id' => Str::uuid(),
+            'field_name' => 'Competitive Intelligence',
+            'description' => 'Competitive Intelligence adalah proses pengumpulan dan analisis informasi tentang pesaing untuk membantu organisasi membuat keputusan strategis yang lebih baik.',
+        ]);
     }
 }
