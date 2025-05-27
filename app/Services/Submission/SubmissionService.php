@@ -66,15 +66,18 @@ class SubmissionService
                 throw new Exception('Pengajuan tidak ditemukan.');
             }
 
-            if ($submission->document_number !== null) {
-                $documentNumber = $submission->document_number;
-            } else {
+            $document = $submission->document;
+            if ($document) {
+                if ($document->document_number !== null) {
+                    $documentNumber = $document->document_number;
+                } 
+                
+                if ($document->document_date !== null) {
+                    $documentDate = $document->document_date;
+                }
+            } 
+            else {
                 $documentNumber = null;
-            }
-
-            if ($submission->document_date !== null) {
-                $documentDate = $submission->document_date;
-            } else {
                 $documentDate = null;
             }
 
@@ -104,11 +107,11 @@ class SubmissionService
                 $this->examsRepository->create($submission->id);
             }
 
-            if ($status !== 'completed') {
-                try {
-                    $this->examsRepository->delete($submission->id);
-                } catch (ResourceNotFoundException $e) {}
-            }
+            // if ($status !== 'completed') {
+            //     try {
+            //         $this->examsRepository->delete($submission->id);
+            //     } catch (ResourceNotFoundException $e) {}
+            // }
 
             DB::commit();
 

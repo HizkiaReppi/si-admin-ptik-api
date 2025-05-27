@@ -28,7 +28,15 @@ class ExamsRepository
                 });
             });
 
-            $query->with(['submission', 'submission.category', 'submission.student', 'submission.student.user', 'submission.examiners', 'submission.examiners.examiner', 'submission.examiners.examiner.user']);
+            $query->with([
+                'submission', 'submission.category', 'submission.student', 
+                'submission.student.firstSupervisor', 
+                'submission.student.firstSupervisor.user',
+                'submission.student.secondSupervisor',
+                'submission.student.secondSupervisor.user', 
+                'submission.student.user', 'submission.examiners', 'submission.examiners.examiner', 
+                'submission.examiners.examiner.user'
+            ]);
 
             if (!empty($filters['search'])) {
                 $searchTerm = $filters['search'];

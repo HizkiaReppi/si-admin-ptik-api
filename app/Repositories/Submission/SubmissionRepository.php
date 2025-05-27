@@ -111,21 +111,24 @@ class SubmissionRepository
             'rejection_reason' => $reason,
         ]);
     
-        $document = $submission->document;
+        if ($status === 'faculty_review') {
+            $document = $submission->document;
     
-        if ($document) {
-            $document->update([
-                'document_date' => $documentDate,
-            ]);
-        } else {
-            $submission->document()->create([
-                'document_number' => $documentNumber,
-                'document_date' => $documentDate,
-            ]);
+            if ($document) {
+                $document->update([
+                    'document_number' => $documentNumber,
+                    'document_date' => $documentDate,
+                ]);
+            } else {
+                $submission->document()->create([
+                    'document_number' => $documentNumber,
+                    'document_date' => $documentDate,
+                ]);
+            }
         }
     
         return $submission->refresh();
-    }
+    }    
 
     /**
      * Add examiners to a submission.
