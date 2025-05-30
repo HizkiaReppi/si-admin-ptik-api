@@ -22,11 +22,11 @@ class Document extends Model
         return $this->morphTo();
     }
 
-    public function getDocumentDateAttribute($value): ?string
+    public function getFormattedDocumentDateAttribute(): ?string
     {
-        if (is_null($value)) {
+        if (is_null($this->document_date)) {
             return null;
         }
-        return \Carbon\Carbon::parse($value)->translatedFormat('d F Y');
+        return \Carbon\Carbon::parse($this->document_date)->translatedFormat('d F Y');
     }
 }
