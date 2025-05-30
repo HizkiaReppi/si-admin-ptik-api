@@ -127,6 +127,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/exams/{category}', [ExamsController::class, 'index'])->middleware(CacheResponse::class)->name('api.exams.index');
         Route::post('/exams/{category}/{submission}', [ExamsController::class, 'store'])->name('api.exams.store');
         Route::put('/exams/{category}/{submission}', [ExamsController::class, 'update'])->name('api.exams.update');
+        Route::get('/exams/{category}/{exam}/generate-document/{documentType}', [ExamsController::class, 'generateDocument'])->name('api.exams.generate-document');    
     });
 
     require __DIR__.'/auth.php';

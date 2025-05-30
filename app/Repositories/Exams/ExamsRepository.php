@@ -3,6 +3,7 @@
 namespace App\Repositories\Exams;
 
 use App\Exceptions\ResourceNotFoundException;
+use App\Models\Document;
 use App\Models\Exam;
 use App\Models\Submission\Submission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -15,9 +16,9 @@ class ExamsRepository
     {
         $cacheKey = "{$slug}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
 
-        $cacheKeys = Cache::get("exams_cache_keys", []);
+        $cacheKeys = Cache::get('exams_cache_keys', []);
         $cacheKeys[] = $cacheKey;
-        Cache::put("exams_cache_keys", array_unique($cacheKeys), 3600);
+        Cache::put('exams_cache_keys', array_unique($cacheKeys), 3600);
 
         return Cache::remember($cacheKey, 3600, function () use ($slug, $filters, $perPage) {
             $query = Exam::query();
@@ -29,13 +30,17 @@ class ExamsRepository
             });
 
             $query->with([
-                'submission', 'submission.category', 'submission.student', 
+                'submission', 
+                'submission.category', 
+                'submission.student', 
                 'submission.student.firstSupervisor', 
-                'submission.student.firstSupervisor.user',
-                'submission.student.secondSupervisor',
+                'submission.student.firstSupervisor.user', 
+                'submission.student.secondSupervisor', 
                 'submission.student.secondSupervisor.user', 
-                'submission.student.user', 'submission.examiners', 'submission.examiners.examiner', 
-                'submission.examiners.examiner.user'
+                'submission.student.user', 'submission.examiners', 
+                'submission.examiners.examiner', 
+                'submission.examiners.examiner.user',
+                'document'
             ]);
 
             if (!empty($filters['search'])) {
@@ -65,6 +70,32 @@ class ExamsRepository
         });
     }
 
+    public function getById(string $id)
+    {
+        $exam = Exam::with([
+                'submission', 
+                'submission.category', 
+                'submission.student', 
+                'submission.student.firstSupervisor', 
+                'submission.student.firstSupervisor.user', 
+                'submission.student.secondSupervisor', 
+                'submission.student.secondSupervisor.user', 
+                'submission.student.user', 
+                'submission.examiners', 
+                'submission.examiners.examiner', 
+                'submission.examiners.examiner.user',
+                'document'
+            ])
+            ->where('submission_id', $id)
+            ->first();
+
+        if (!$exam) {
+            throw new ResourceNotFoundException('Exam data not found');
+        }
+
+        return $exam;
+    }
+
     public function create(string $submissionId): Exam
     {
         try {
@@ -79,7 +110,7 @@ class ExamsRepository
         }
     }
 
-    public function update(string $submissionId, array $data): ?Exam
+    public function update(string $submissionId, array $data, string $documentNumber, string $documentDate): ?Exam
     {
         DB::beginTransaction();
         try {
@@ -94,6 +125,20 @@ class ExamsRepository
                 'exam_time' => $data['exam_time'] ?? $exam->exam_time,
                 'exam_place' => $data['exam_place'] ?? $exam->exam_place,
             ]);
+
+            $document = $exam->document;
+
+            if ($document) {
+                $document->update([
+                    'document_number' => $documentNumber,
+                    'document_date' => $documentDate,
+                ]);
+            } else {
+                $exam->document()->create([
+                    'document_number' => $documentNumber,
+                    'document_date' => $documentDate,
+                ]);
+            }
 
             DB::commit();
 
@@ -118,15 +163,15 @@ class ExamsRepository
     {
         $currentYear = date('Y');
 
-        $lastSubmission = Submission::where('document_number', 'LIKE', "%/{$currentYear}")
+        $lastDocument = Document::where('document_number', 'LIKE', "%/{$currentYear}")
             ->orderBy('document_number', 'desc')
             ->first();
 
-        if (!$lastSubmission) {
+        if (!$lastDocument) {
             return '0001';
         }
 
-        preg_match('/^(\d+)/', $lastSubmission->document_number, $matches);
+        preg_match('/^(\d+)/', $lastDocument->document_number, $matches);
         $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
 
         return str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
@@ -143,11 +188,11 @@ class ExamsRepository
         try {
             $exam = Exam::where('submission_id', $submissionId)->first();
 
-            if($exam) {
+            if ($exam) {
                 $exam->delete();
-                
+
                 DB::commit();
-                
+
                 return $exam;
             } else {
                 return null;
