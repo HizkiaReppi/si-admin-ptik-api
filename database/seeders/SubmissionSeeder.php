@@ -116,12 +116,17 @@ class SubmissionSeeder extends Seeder
             }
 
             if ($submission->status === 'completed') {
-                Exam::insert([
+                $exam = Exam::create([
                     'id' => Str::uuid(),
                     'submission_id' => $submission->id,
                     'exam_date' => now()->addDays(7),
                     'exam_time' => now()->addHours(2),
                     'exam_place' => 'Ruang Ujian',
+                ]);
+
+                $exam->document()->create([
+                    'document_number' => fake()->regexify('SK/\d{8}/[a-zA-Z0-9]{5}'),
+                    'document_date' => fake()->dateTimeBetween($exam->created_at, 'now'),
                 ]);
             }
         });
