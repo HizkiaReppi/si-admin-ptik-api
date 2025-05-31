@@ -30,6 +30,9 @@ class UpdateSubmissionStatusRequest extends FormRequest
         $rules = [
             'status' => ['required', Rule::in(['in_review', 'faculty_review', 'completed', 'rejected'])],
             'reason' => ['required_if:status,rejected', 'string', 'max:1000'],
+            'generated_file' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'generated_document_number' => ['required_if:status,completed', 'string', 'max:50'],
+            'generated_document_date' => ['required_if:status,completed', 'date_format:Y-m-d'],
         ];
 
         if (in_array($categorySlug, ['sk-seminar-proposal', 'sk-ujian-hasil-penelitian'])) {
@@ -59,6 +62,16 @@ class UpdateSubmissionStatusRequest extends FormRequest
             'status.required' => 'Status pengajuan wajib diisi.',
             'status.in' => 'Status tidak valid.',
             'reason.required_if' => 'Alasan penolakan wajib diisi jika status ditolak.',
+            'reason.string' => 'Alasan penolakan harus berupa teks.',
+            'reason.max' => 'Alasan penolakan tidak boleh lebih dari :max karakter.',
+            'generated_file.file' => 'File yang diunggah harus berupa file.',
+            'generated_file.mimes' => 'File yang diunggah harus berupa file PDF.',
+            'generated_file.max' => 'Ukuran file tidak boleh lebih dari :max kilobyte.',
+            'generated_document_number.required_if' => 'Nomor dokumen wajib diisi',
+            'generated_document_number.string' => 'Nomor dokumen harus berupa teks.',
+            'generated_document_number.max' => 'Nomor dokumen tidak boleh lebih dari :max karakter.',
+            'generated_document_date.required_if' => 'Tanggal dokumen wajib diisi.',
+            'generated_document_date.date_format' => 'Tanggal dokumen harus dalam format Y-m-d.',
             'examiners.required_if' => 'Penguji wajib dipilih untuk status faculty_review.',
             'examiners.size' => 'Jumlah penguji harus :size orang.',
             'examiners.*.exists' => 'Penguji tidak valid.',

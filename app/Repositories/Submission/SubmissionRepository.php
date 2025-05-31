@@ -12,6 +12,7 @@ use App\Models\Submission\SubmissionSupervisor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class SubmissionRepository
@@ -129,6 +130,43 @@ class SubmissionRepository
     
         return $submission->refresh();
     }    
+
+    public function updateGeneratedSubmission(
+        Submission $submission,
+        ?string $generatedFilePath = null,
+        ?string $generatedDocumentNumber = null,
+        ?string $generatedDocumentDate = null
+    ): Submission {
+        Log::info('Data received in updateGeneratedSubmission (Repository):', [
+            'submission_id' => $submission->id,
+            'generated_file_path' => $generatedFilePath,
+            'generated_document_number' => $generatedDocumentNumber,
+            'generated_document_date' => $generatedDocumentDate,
+        ]);
+    
+        $updateData = [
+            'generated_file_path' => $generatedFilePath,
+            'generated_document_number' => $generatedDocumentNumber,
+            'generated_document_date' => $generatedDocumentDate,
+        ];
+    
+        // It's good to check if the update was successful
+        $updated = $submission->update($updateData);
+    
+        if (!$updated) {
+            Log::error('Submission update failed in repository.', [
+                'submission_id' => $submission->id,
+                'update_data' => $updateData
+            ]);
+            // Optionally, throw an exception or handle the error
+        } else {
+            Log::info('Submission successfully updated in repository.', [
+                'submission_id' => $submission->id
+            ]);
+        }
+    
+        return $submission->refresh();
+    }
 
     /**
      * Add examiners to a submission.

@@ -112,8 +112,29 @@ class SubmissionController extends Controller
      */
     public function updateStatus(UpdateSubmissionStatusRequest $request, Category $category, Submission $submission): JsonResponse
     {
+        $validated = $request->validated();
+        
         try {
-            $submission = $this->submissionService->verify($category->slug, $submission->id, $request->status, Auth::user()->name, $request->reason, $request->examiners, $request->supervisors);
+            $filePath = null;
+            if ($request->hasFile('generated_file')) {
+                $file = $request->file('generated_file');
+
+                $filePath = "submissions/generated_files/{$submission->id}-{$file->getClientOriginalName()}";
+                $file->move(storage_path('app/public/' . dirname($filePath)), basename($filePath));
+            }
+
+            $submission = $this->submissionService->verify(
+                $category->slug, 
+                $submission->id, 
+                $request->status, 
+                Auth::user()->name, 
+                $request->reason, 
+                $request->examiners, 
+                $request->supervisors, 
+                $filePath,
+                $request->generated_document_number,
+                $request->generated_document_date
+            );
 
             return response()->json(
                 [

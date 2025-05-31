@@ -23,7 +23,14 @@ class Submission extends Model
      * @var string[]
      */
     protected $fillable = [
-        'category_id', 'student_id', 'status', 'reviewer_name', 'generated_file_path', 'rejection_reason',
+        'category_id', 
+        'student_id', 
+        'status', 
+        'reviewer_name', 
+        'generated_file_path', 
+        'generated_document_number',
+        'generated_document_date',
+        'rejection_reason',
     ];
 
     public function document(): MorphOne

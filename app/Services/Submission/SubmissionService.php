@@ -14,6 +14,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use function PHPUnit\Framework\isNull;
+
 class SubmissionService
 {
     public function __construct(
@@ -55,8 +57,18 @@ class SubmissionService
      *
      * @throws Exception
      */
-    public function verify(string $categorySlug, string $submissionId, string $status, string $reviewerName, ?string $reason = null, ?array $examiners = null, ?array $supervisors = null): Submission
-    {
+    public function verify(
+        string $categorySlug, 
+        string $submissionId, 
+        string $status, 
+        string $reviewerName, 
+        ?string $reason = null, 
+        ?array $examiners = null, 
+        ?array $supervisors = null,
+        ?string $generatedFilePath = null,
+        string $generatedDocumentNumber,
+        string $generatedDocumentDate,
+    ): Submission {
         DB::beginTransaction();
 
         try {
@@ -93,17 +105,23 @@ class SubmissionService
 
             $submission = $this->repository->updateStatus($submission, $status, $reviewerName, $reason, $documentNumber, $documentDate);
 
-            // Add examiners if provided
             if ($examiners && $status === 'faculty_review') {
                 $this->repository->addExaminers($submission, $examiners);
             }
 
-            // Add supervisors if provided
             if ($supervisors && $status === 'faculty_review' && $categorySlug === 'permohonan-sk-pembimbing-skripsi') {
                 $this->repository->addSupervisors($submission, $supervisors);
             }
 
             if ($status === 'completed' && ($categorySlug === 'sk-seminar-proposal' || $categorySlug === 'sk-ujian-hasil-penelitian')) {
+                Log::info('generatedDocumentNumber', [
+                    $generatedDocumentNumber
+                ]);
+                Log::info('generatedDocumentDate', [
+                    $generatedDocumentDate
+                ]);
+                
+                $this->repository->updateGeneratedSubmission($submission, $generatedFilePath, $generatedDocumentNumber, $generatedDocumentDate);
                 $this->examsRepository->create($submission->id);
             }
 
