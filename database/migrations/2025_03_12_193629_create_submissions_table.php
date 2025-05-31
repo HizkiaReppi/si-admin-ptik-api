@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('status', ['submitted', 'in_review', 'faculty_review', 'completed', 'rejected'])->default('submitted');
             $table->string('reviewer_name')->nullable();
             $table->text('generated_file_path')->nullable();
+            $table->string('generated_document_number')->nullable();
+            $table->string('generated_document_date')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
