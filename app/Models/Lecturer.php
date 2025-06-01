@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\TextFormattingHelper;
 use App\Models\Lecturers\Education;
 use App\Models\Lecturers\Experience;
 use App\Models\Lecturers\LecturerProfile;
@@ -118,6 +119,19 @@ class Lecturer extends Model
             return $this->user->name . ', ' . $this->back_degree;
         } else {
             return $this->user->name;
+        }
+    }
+
+    public function getShortNameAttribute(): string
+    {
+        if ($this->front_degree && $this->back_degree) {
+            return $this->front_degree . ' ' . TextFormattingHelper::formatShortName($this->user->name) . ', ' . $this->back_degree;
+        } elseif ($this->front_degree) {
+            return $this->front_degree . ' ' . TextFormattingHelper::formatShortName($this->user->name);
+        } elseif ($this->back_degree) {
+            return TextFormattingHelper::formatShortName($this->user->name) . ', ' . $this->back_degree;
+        } else {
+            return TextFormattingHelper::formatShortName($this->user->name);
         }
     }
 

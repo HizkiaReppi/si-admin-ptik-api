@@ -70,4 +70,29 @@ class TextFormattingHelper
 
         return sprintf('%s %s %s', $part1, $part2, $part3);
     }
+
+    /**
+     * Format full name to abbreviated middle names format.
+     *
+     * @param string $fullName
+     * @return string
+     */
+    public static function formatShortName(string $fullName): string
+    {
+        $nameParts = preg_split('/\s+/', trim($fullName));
+        $partCount = count($nameParts);
+        if ($partCount <= 2) {
+            return $fullName;
+        }
+
+        $firstName = $nameParts[0];
+        $lastName = $nameParts[$partCount - 1];
+        $middleNames = array_slice($nameParts, 1, $partCount - 2);
+
+        $middleInitials = array_map(function ($name) {
+            return mb_strtoupper(mb_substr($name, 0, 1)) . '.';
+        }, $middleNames);
+
+        return $firstName . ' ' . implode(' ', $middleInitials) . ' ' . $lastName;
+    }
 }

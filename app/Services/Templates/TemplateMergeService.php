@@ -165,4 +165,30 @@ class TemplateMergeService
         $template->saveAs($outputPath);
         return "documents/{$outputName}";
     }
+
+    public function generateBeritaAcaraSeminarHasil(array $data): string
+    {
+        $templatePath = storage_path('app/templates/berita-acara-hasil.docx');
+        $outputName = 'berita_acara_seminar_hasil_' . $data['studentName'] . '.docx';
+        $outputPath = storage_path("app/public/documents/{$outputName}");
+
+        $template = new TemplateProcessor($templatePath);
+
+        $template->setValue('STUDENT_NAME', $data['studentName']);
+        $template->setValue('STUDENT_NIM', $data['studentNim']);
+        $template->setValue('THESIS_TITLE', $data['thesisTitle']);
+        $template->setValue('EXAM_DATE', $data['examDate']);
+        $template->setValue('STUDENT_SUPERVISOR_1', $data['studentSupervisor1']);
+        $template->setValue('STUDENT_SUPERVISOR_2', $data['studentSupervisor2']);
+        $template->setValue('EXAMINER_1', $data['examiner1']);
+        $template->setValue('EXAMINER_2', $data['examiner2']);
+        $template->setValue('EXAMINER_3', $data['examiner3']);
+        $template->setValue('GENERATED_DOCUMENT_NUMBER', $data['documentNumber']);
+        $template->setValue('GENERATED_DOCUMENT_DATE', $data['documentDate']);
+        $template->setValue('HEAD_OF_DEPARTMENT_NAME', $data['headOfDepartmentName']);
+        $template->setValue('HEAD_OF_DEPARTMENT_NIP', $data['headOfDepartmentNip']);
+
+        $template->saveAs($outputPath);
+        return "documents/{$outputName}";
+    }
 }

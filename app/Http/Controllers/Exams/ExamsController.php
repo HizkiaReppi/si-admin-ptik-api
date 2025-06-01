@@ -14,16 +14,13 @@ use App\Models\HeadOfDepartment;
 use App\Models\Submission\Submission;
 use App\Services\Exams\ExamsService;
 use App\Services\Templates\TemplateMergeService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExamsController extends Controller
 {
-    public function __construct(
-        protected ExamsService $service, 
-        protected ApiResponseHelper $apiResponseHelper, 
-        protected ApiResponseClass $apiResponseClass
-    ) {}
+    public function __construct(protected ExamsService $service, protected ApiResponseHelper $apiResponseHelper, protected ApiResponseClass $apiResponseClass) {}
 
     /**
      * Display a listing of the resource.
@@ -84,33 +81,18 @@ class ExamsController extends Controller
         }
     }
 
-    public function generateDocument(
-        Category $category,
-        Exam $exam,
-        string $documentType,
-        TemplateMergeService $templateMergeService,
-        TextFormattingHelper $textFormattingHelper,
-    ) {
+    public function generateDocument(Category $category, Exam $exam, string $documentType, TemplateMergeService $templateMergeService, TextFormattingHelper $textFormattingHelper)
+    {
         $validDocumentTypes = ['undangan-ujian', 'berita-acara-ujian'];
         if (!in_array($documentType, $validDocumentTypes)) {
             return response()->json(['message' => 'Invalid document type'], 400);
         }
-        
-        $exam->load([
-            'submission', 
-            'submission.student', 
-            'submission.student.user', 
-            'submission.student.firstSupervisor', 
-            'submission.student.secondSupervisor', 
-            'submission.files',
-            'submission.document',
-            'submission.examiners.examiner',
-            'submission.examiners.examiner.user'
-        ]);
+
+        $exam->load(['submission', 'submission.student', 'submission.student.user', 'submission.student.firstSupervisor', 'submission.student.secondSupervisor', 'submission.files', 'submission.document', 'submission.examiners.examiner', 'submission.examiners.examiner.user']);
         $thesisTitle = $exam->submission->files->where('requirement.name', 'Judul Skripsi')->first()?->file_path ?? '-';
 
         $headOfDepartment = HeadOfDepartment::where('role', 'kajur')->with('lecturer.user')->first();
-        
+
         switch ($category->slug) {
             case 'sk-seminar-proposal':
                 switch ($documentType) {
@@ -130,8 +112,10 @@ class ExamsController extends Controller
                             'examPlace' => $exam->exam_place,
                         ];
                         $path = $templateMergeService->generateUndanganSeminarProposal($data);
-                        return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
-        
+                        return response()
+                            ->download(storage_path("app/public/{$path}"))
+                            ->deleteFileAfterSend();
+
                     case 'berita-acara-ujian':
                         $data = [
                             'studentName' => $exam->submission->student->user->name,
@@ -141,12 +125,14 @@ class ExamsController extends Controller
                             'examDay' => $exam->exam_date ? str_pad(explode(',', $exam->exam_date)[0], 2, '0', STR_PAD_LEFT) : '-',
                         ];
                         $path = $templateMergeService->generateBeritaAcaraSeminarProposal($data);
-                        return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
-        
+                        return response()
+                            ->download(storage_path("app/public/{$path}"))
+                            ->deleteFileAfterSend();
+
                     default:
                         return response()->json(['message' => 'Invalid document type'], 400);
                 }
-        
+
             case 'sk-ujian-hasil-penelitian':
                 switch ($documentType) {
                     case 'undangan-ujian':
@@ -166,15 +152,35 @@ class ExamsController extends Controller
                             'examPlace' => $exam->exam_place,
                         ];
                         $path = $templateMergeService->generateUndanganUjianHasilPenelitian($data);
-                        return response()->download(storage_path("app/public/{$path}"))->deleteFileAfterSend();
-        
+                        return response()
+                            ->download(storage_path("app/public/{$path}"))
+                            ->deleteFileAfterSend();
+                    case 'berita-acara-ujian':
+                        $data = [
+                            'studentName' => $exam->submission->student->user->name,
+                            'studentNim' => $textFormattingHelper->formatNIM($exam->submission->student->nim),
+                            'thesisTitle' => $thesisTitle ?? '-',
+                            'studentSupervisor1' => $exam->submission->student->firstSupervisor?->short_name ?? '-',
+                            'studentSupervisor2' => $exam->submission->student->secondSupervisor?->short_name ?? '-',
+                            'examiner1' => $exam->submission->examiners[0]->examiner->short_name ?? '-',
+                            'examiner2' => $exam->submission->examiners[1]->examiner->short_name ?? '-',
+                            'examiner3' => $exam->submission->examiners[2]->examiner->short_name ?? '-',
+                            'documentNumber' => $exam->submission->generated_document_number ?? '-',
+                            'documentDate' => Carbon::parse($exam->submission->generated_document_date)->translatedFormat('d F Y') ?? '-',
+                            'headOfDepartmentName' => $headOfDepartment?->lecturer->full_name ?? '-',
+                            'headOfDepartmentNip' => $textFormattingHelper->formatNIP($headOfDepartment?->lecturer->nip) ?? '-',
+                            'examDate' => $exam->exam_date ? explode(',', $exam->exam_date)[1] : '-',
+                        ];
+                        $path = $templateMergeService->generateBeritaAcaraSeminarHasil($data);
+                        return response()
+                            ->download(storage_path("app/public/{$path}"))
+                            ->deleteFileAfterSend();
                     default:
                         return response()->json(['message' => 'Invalid document type'], 400);
                 }
-        
+
             default:
                 return response()->json(['message' => 'Invalid category'], 400);
         }
-        
     }
 }
