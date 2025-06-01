@@ -66,8 +66,8 @@ class SubmissionService
         ?array $examiners = null, 
         ?array $supervisors = null,
         ?string $generatedFilePath = null,
-        string $generatedDocumentNumber,
-        string $generatedDocumentDate,
+        ?string $generatedDocumentNumber = null,
+        ?string $generatedDocumentDate = null,
     ): Submission {
         DB::beginTransaction();
 
