@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Exams\ExamsController;
 use App\Http\Controllers\External\TeachingHistoryController;
+use App\Http\Controllers\External\RegionController;
 use App\Http\Controllers\HeadOfDepartment\HeadOfDepartmentController;
 use App\Http\Controllers\Lecturers\LecturerController;
 use App\Http\Controllers\Lecturers\LecturerEducationController;
@@ -128,6 +129,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/exams/{category}/{submission}', [ExamsController::class, 'store'])->name('api.exams.store');
         Route::put('/exams/{category}/{submission}', [ExamsController::class, 'update'])->name('api.exams.update');
         Route::get('/exams/{category}/{exam}/generate-document/{documentType}', [ExamsController::class, 'generateDocument'])->name('api.exams.generate-document');    
+    });
+
+    Route::prefix('region')->name('region.')->group(function () {
+        Route::get('provinces', [RegionController::class, 'provinces'])->name('provinces');
+        Route::get('regencies/{provinceCode}', [RegionController::class, 'regencies'])->name('regencies');
+        Route::get('districts/{regencyCode}', [RegionController::class, 'districts'])->name('districts');
+        Route::get('villages/{districtCode}', [RegionController::class, 'villages'])->name('villages');
+        Route::post('clear-cache', [RegionController::class, 'clearCache'])->name('clearCache');
     });
 
     require __DIR__.'/auth.php';
