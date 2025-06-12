@@ -89,6 +89,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/submissions/{category}', SubmissionController::class)->names('api.submissions')->except(['index', 'store', 'show', 'update', 'destroy']);
         Route::get('/submissions', [SubmissionController::class, 'getAllByStatus'])->middleware(CacheResponse::class)->name('api.submissions.getAllByStatus');
         Route::get('/submissions/{category}', [SubmissionController::class, 'index'])->middleware(CacheResponse::class)->name('api.submissions.index');
+        Route::get('/submissions/{user}/{category}', [SubmissionController::class, 'getAllByLecturer'])->middleware(CacheResponse::class)->name('api.submissions.getAllByLecturer');
         Route::get('/submissions/{category}/{submission}', [SubmissionController::class, 'show'])->middleware(CacheResponse::class)->name('api.submissions.show');
         Route::put('/submissions/{category}/{submission}/status', [SubmissionController::class, 'updateStatus'])->name('api.submissions.update-status');
         Route::get('/submissions/{category}/{submission}/generate-document', [SubmissionController::class, 'generateDocument'])->name('api.submissions.generate-document');

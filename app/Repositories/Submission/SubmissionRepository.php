@@ -5,10 +5,12 @@ namespace App\Repositories\Submission;
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Category;
 use App\Models\Document;
+use App\Models\Lecturer;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionExaminer;
 use App\Models\Submission\SubmissionFile;
 use App\Models\Submission\SubmissionSupervisor;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +53,65 @@ class SubmissionRepository
                 if ($sortBy === 'status') {
                     $query->orderBy('status', $sortOrder);
                 } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            }
+
+            $query->orderBy('created_at', 'desc');
+
+            return $query->paginate($perPage);
+        });
+    }
+
+    public function getAllByLecturer(string $userId, string $categorySlug, array $filters = [], ?int $perPage = 10): LengthAwarePaginator
+    {
+        $cacheKey = "submission_lecturer_{$userId}_{$categorySlug}_{$perPage}_page_" . request()->get('page', 1) . '_' . md5(json_encode($filters));
+
+        $cacheKeys = Cache::get('submissions_cache_keys', []);
+        $cacheKeys[] = $cacheKey;
+        Cache::put('submissions_cache_keys', array_unique($cacheKeys), 3600); // Simpan selama 1 jam
+
+        $lecturer = Lecturer::where('user_id', $userId)->first();
+
+        $lecturerId = $lecturer ? $lecturer->id : null;
+
+        return Cache::remember($cacheKey, 3600, function () use ($lecturerId, $categorySlug, $filters, $perPage) {
+            $query = Submission::query();
+
+            if (!$lecturerId) {
+                return new \Illuminate\Pagination\LengthAwarePaginator([], 0, $perPage);
+            }
+
+            $query->whereHas('category', function ($query) use ($categorySlug) {
+                $query->where('slug', $categorySlug);
+            });
+
+            $query->whereHas('student', function ($query) use ($lecturerId) {
+                $query->where(function ($q) use ($lecturerId) {
+                    $q->where('lecturer_id_1', $lecturerId)
+                      ->orWhere('lecturer_id_2', $lecturerId);
+                });
+            });
+
+            $query->with(['student', 'student.user', 'files', 'category']);
+
+            if (!empty($filters['search'])) {
+                $searchTerm = $filters['search'];
+
+                $query->whereHas('student', function ($query) use ($searchTerm) {
+                    $query->whereHas('user', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%");
+                    });
+                });
+            }
+
+            if (!empty($filters['sortBy']) && !empty($filters['order'])) {
+                $sortBy = $filters['sortBy'];
+                $sortOrder = $filters['order'];
+
+                $validSortColumns = ['status', 'created_at']; 
+
+                if (in_array($sortBy, $validSortColumns)) {
                     $query->orderBy($sortBy, $sortOrder);
                 }
             }

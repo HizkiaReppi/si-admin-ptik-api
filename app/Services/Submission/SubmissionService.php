@@ -31,6 +31,11 @@ class SubmissionService
         return $this->repository->getAll($categorySlug, $filters, $perPage);
     }
 
+    public function getAllByLecturer(string $userId, string $categorySlug, array $filters = [], int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->repository->getAllByLecturer($userId, $categorySlug, $filters, $perPage);
+    }
+
     public function getById(string $categorySlug, string $id): ?Submission
     {
         return $this->repository->getById($categorySlug, $id);

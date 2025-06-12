@@ -14,6 +14,8 @@ use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\Submission\UpdateSubmissionStatusRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
 use App\Models\HeadOfDepartment;
+use App\Models\Lecturer;
+use App\Models\User;
 use App\Services\Submission\SubmissionService;
 use App\Services\Templates\TemplateMergeService;
 use Illuminate\Http\JsonResponse;
@@ -45,6 +47,27 @@ class SubmissionController extends Controller
         ];
 
         $submissions = $this->submissionService->getAll($category->slug, $filters, (int) $perPage);
+
+        $pagination = $this->apiResponseHelper->generatePagination($submissions);
+        $submissions = $submissions->items();
+
+        return $this->apiResponseClass->sendResponseWithPagination(200, 'Submissions retrieved successfully', $submissions, $pagination);
+    }
+
+    public function getAllByLecturer(User $user, Category $category, Request $request): JsonResponse
+    {
+        $search = $request->only('search');
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', null);
+        $order = $request->input('order');
+
+        $filters = [
+            'search' => $search['search'] ?? null,
+            'sortBy' => $sortBy,
+            'order' => $order,
+        ];
+
+        $submissions = $this->submissionService->getAllByLecturer($user->id, $category->slug, $filters, (int) $perPage);
 
         $pagination = $this->apiResponseHelper->generatePagination($submissions);
         $submissions = $submissions->items();
